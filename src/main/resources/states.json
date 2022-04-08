@@ -1,0 +1,250 @@
+[
+  {
+    "name": "Alabama",
+    "twoLetterCode": "AL"
+  },
+  {
+    "name": "Alaska",
+    "twoLetterCode": "AK"
+  },
+  {
+    "name": "American Samoa",
+    "twoLetterCode": "AS"
+  },
+  {
+    "name": "Arizona",
+    "twoLetterCode": "AZ"
+  },
+  {
+    "name": "Arkansas",
+    "twoLetterCode": "AR"
+  },
+  {
+    "name": "Armed Forces Americas (except Canada)",
+    "twoLetterCode": "AA"
+  },
+  {
+    "name": "Armed Forces Europe, the Middle East, and Canada",
+    "twoLetterCode": "AE"
+  },
+  {
+    "name": "Armed Forces Pacific",
+    "twoLetterCode": "AP"
+  },
+  {
+    "name": "California",
+    "twoLetterCode": "CA"
+  },
+  {
+    "name": "Colorado",
+    "twoLetterCode": "CO"
+  },
+  {
+    "name": "Connecticut",
+    "twoLetterCode": "CT"
+  },
+  {
+    "name": "Delaware",
+    "twoLetterCode": "DE"
+  },
+  {
+    "name": "District of Columbia",
+    "twoLetterCode": "DC"
+  },
+  {
+    "name": "Federated States of Micronesia",
+    "twoLetterCode": "FM"
+  },
+  {
+    "name": "Florida",
+    "twoLetterCode": "FL"
+  },
+  {
+    "name": "Georgia",
+    "twoLetterCode": "GA"
+  },
+  {
+    "name": "Guam",
+    "twoLetterCode": "GU"
+  },
+  {
+    "name": "Hawaii",
+    "twoLetterCode": "HI"
+  },
+  {
+    "name": "Idaho",
+    "twoLetterCode": "ID"
+  },
+  {
+    "name": "Illinois",
+    "twoLetterCode": "IL"
+  },
+  {
+    "name": "Indiana",
+    "twoLetterCode": "IN"
+  },
+  {
+    "name": "Iowa",
+    "twoLetterCode": "IA"
+  },
+  {
+    "name": "Kansas",
+    "twoLetterCode": "KS"
+  },
+  {
+    "name": "Kentucky",
+    "twoLetterCode": "KY"
+  },
+  {
+    "name": "Louisiana",
+    "twoLetterCode": "LA"
+  },
+  {
+    "name": "Maine",
+    "twoLetterCode": "ME"
+  },
+  {
+    "name": "Marshall Islands",
+    "twoLetterCode": "MH"
+  },
+  {
+    "name": "Maryland",
+    "twoLetterCode": "MD"
+  },
+  {
+    "name": "Massachusetts",
+    "twoLetterCode": "MA"
+  },
+  {
+    "name": "Michigan",
+    "twoLetterCode": "MI"
+  },
+  {
+    "name": "Minnesota",
+    "twoLetterCode": "MN"
+  },
+  {
+    "name": "Mississippi",
+    "twoLetterCode": "MS"
+  },
+  {
+    "name": "Missouri",
+    "twoLetterCode": "MO"
+  },
+  {
+    "name": "Montana",
+    "twoLetterCode": "MT"
+  },
+  {
+    "name": "Nebraska",
+    "twoLetterCode": "NE"
+  },
+  {
+    "name": "Nevada",
+    "twoLetterCode": "NV"
+  },
+  {
+    "name": "New Hampshire",
+    "twoLetterCode": "NH"
+  },
+  {
+    "name": "New Jersey",
+    "twoLetterCode": "NJ"
+  },
+  {
+    "name": "New Mexico",
+    "twoLetterCode": "NM"
+  },
+  {
+    "name": "New York",
+    "twoLetterCode": "NY"
+  },
+  {
+    "name": "North Carolina",
+    "twoLetterCode": "NC"
+  },
+  {
+    "name": "North Dakota",
+    "twoLetterCode": "ND"
+  },
+  {
+    "name": "Northern Mariana Islands",
+    "twoLetterCode": "MP"
+  },
+  {
+    "name": "Ohio",
+    "twoLetterCode": "OH"
+  },
+  {
+    "name": "Oklahoma",
+    "twoLetterCode": "OK"
+  },
+  {
+    "name": "Oregon",
+    "twoLetterCode": "OR"
+  },
+  {
+    "name": "Palau",
+    "twoLetterCode": "PW"
+  },
+  {
+    "name": "Pennsylvania",
+    "twoLetterCode": "PA"
+  },
+  {
+    "name": "Puerto Rico",
+    "twoLetterCode": "PR"
+  },
+  {
+    "name": "Rhode Island",
+    "twoLetterCode": "RI"
+  },
+  {
+    "name": "South Carolina",
+    "twoLetterCode": "SC"
+  },
+  {
+    "name": "South Dakota",
+    "twoLetterCode": "SD"
+  },
+  {
+    "name": "Tennessee",
+    "twoLetterCode": "TN"
+  },
+  {
+    "name": "Texas",
+    "twoLetterCode": "TX"
+  },
+  {
+    "name": "Utah",
+    "twoLetterCode": "UT"
+  },
+  {
+    "name": "Vermont",
+    "twoLetterCode": "VT"
+  },
+  {
+    "name": "Virgin Islands",
+    "twoLetterCode": "VI"
+  },
+  {
+    "name": "Virginia",
+    "twoLetterCode": "VA"
+  },
+  {
+    "name": "Washington",
+    "twoLetterCode": "WA"
+  },
+  {
+    "name": "West Virginia",
+    "twoLetterCode": "WV"
+  },
+  {
+    "name": "Wisconsin",
+    "twoLetterCode": "WI"
+  },
+  {
+    "name": "Wyoming",
+    "twoLetterCode": "WY"
+  }
+]
