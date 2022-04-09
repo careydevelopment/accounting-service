@@ -1,7 +1,7 @@
 FROM adoptopenjdk/openjdk11:jre-11.0.10_9-alpine
 
-WORKDIR /ecosystem-business-service
+WORKDIR /accounting-service
 
-COPY /target/ecosystem-business-service.jar .
+COPY /target/accounting-service.jar .
 
-ENTRYPOINT ["java", "-jar", "./ecosystem-business-service.jar"]
+ENTRYPOINT ["java", "-jar", "./accounting-service.jar"]
