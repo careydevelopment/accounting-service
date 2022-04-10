@@ -21,7 +21,7 @@ public class ExpenseHarness {
         final Account account = AccountHarness.getTelephoneExpenseAccount();
         final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
 
-        SinglePayment singlePayment = SinglePaymentHarness.getValidSinglePayment(account, TELEPHONE_EXPENSE_AMOUNT,
+        SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(account, TELEPHONE_EXPENSE_AMOUNT,
                 TELEPHONE_EXPENSE_ID, owner);
 
         expense.setPayments(List.of(singlePayment));

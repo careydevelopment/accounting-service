@@ -1,11 +1,14 @@
 package us.careydevelopment.accounting.model;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Document(collection = "#{@environment.getProperty('mongo.account.collection')}")
 public class Account extends OwnedItem {
@@ -17,12 +20,16 @@ public class Account extends OwnedItem {
     private AccountType accountType;
 
     @NotBlank(message = "Account name cannot be blank")
+    @Size(max = 32, message = "Account name cannot exceed 32 characters")
     private String name;
 
     private Long value;
 
     @Valid
     private Account parentAccount;
+
+    @Size(max = 128, message = "Description cannot exceed 128 characters")
+    private String description;
 
     public String getId() {
         return id;
@@ -62,5 +69,30 @@ public class Account extends OwnedItem {
 
     public void setParentAccount(Account parentAccount) {
         this.parentAccount = parentAccount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(id, account.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

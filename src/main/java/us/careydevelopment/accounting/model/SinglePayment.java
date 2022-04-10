@@ -1,8 +1,11 @@
 package us.careydevelopment.accounting.model;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
+import us.careydevelopment.accounting.validator.ExpenseAccount;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -12,6 +15,8 @@ public class SinglePayment extends OwnedItem {
     private String id;
 
     @Valid
+    @NotNull
+    @ExpenseAccount
     private Account account;
 
     @Size(max = 128, message = "Description cannot exceed 128 characters")
@@ -58,6 +63,10 @@ public class SinglePayment extends OwnedItem {
 
     public void setDate(Long date) {
         this.date = date;
+    }
+
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
     }
 
     @Override

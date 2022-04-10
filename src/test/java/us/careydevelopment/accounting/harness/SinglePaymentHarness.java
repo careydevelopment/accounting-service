@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class SinglePaymentHarness {
 
-    public static SinglePayment getValidSinglePayment(final Account account, final Long amount, final String id,
+    public static SinglePayment getSinglePayment(final Account account, final Long amount, final String id,
                                                final UserLightweight owner) {
 
         final SinglePayment singlePayment = new SinglePayment();
@@ -16,6 +16,7 @@ public class SinglePaymentHarness {
         singlePayment.setDate(new Date().getTime());
         singlePayment.setId(id);
         singlePayment.setOwner(owner);
+        singlePayment.setAccount(account);
 
         return singlePayment;
     }

@@ -17,12 +17,14 @@ public class Expense extends OwnedItem {
     private String id;
 
     @Valid
+    @NotNull
     private BusinessLightweight payee;
 
     @Valid
+    @NotNull
     private PaymentAccount paymentAccount;
 
-    @NotNull (message = "Expense date is required")
+    @NotNull(message = "Expense date is required")
     private Long date;
 
     @NotNull(message = "Payment method is required")

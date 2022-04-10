@@ -3,11 +3,13 @@ package us.careydevelopment.accounting.model;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import us.careydevelopment.accounting.harness.ExpenseHarness;
+import us.careydevelopment.accounting.harness.RandomStringGenerator;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,23 +33,32 @@ public class ExpenseValidatorTest {
         assertEquals(1, violations.size());
     }
 
-//    @Test
-//    public void testEmptyDisplayName() {
-//        final Business business = new Business();
-//        business.setName("businessname");
-//
-//        final Set<ConstraintViolation<Business>> violations = validator.validate(business);
-//        assertEquals(1, violations.size());
-//    }
-//
-//    @Test
-//    public void testInvalidEmailAddress() {
-//        final Business business = new Business();
-//        business.setName("businessname");
-//        business.setDisplayName("displayname");
-//        business.setEmail("joe");
-//
-//        final Set<ConstraintViolation<Business>> violations = validator.validate(business);
-//        assertEquals(1, violations.size());
-//    }
+    @Test
+    public void testNullPaymentMethod() {
+        final Expense expense = ExpenseHarness.getValidTelephoneExpense();
+        expense.setPaymentMethod(null);
+
+        final Set<ConstraintViolation<Expense>> violations = validator.validate(expense);
+        assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void testReferenceNumberExceedsLength() {
+        final Expense expense = ExpenseHarness.getValidTelephoneExpense();
+        expense.setReferenceNumber(RandomStringGenerator.generateStringOfLength(13));
+
+        final Set<ConstraintViolation<Expense>> violations = validator.validate(expense);
+        assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void testEmptyPaymentList() {
+        final Expense expense = ExpenseHarness.getValidTelephoneExpense();
+        expense.setPayments(new ArrayList<>());
+
+        final Set<ConstraintViolation<Expense>> violations = validator.validate(expense);
+        assertEquals(1, violations.size());
+    }
+
+
 }
