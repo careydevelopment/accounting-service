@@ -2,6 +2,7 @@ package us.careydevelopment.accounting.model;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Document(collection = "#{@environment.getProperty('mongo.expense.collection')}")
 public class Expense extends OwnedItem {
 
     @Id

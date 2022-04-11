@@ -23,7 +23,7 @@ public class Account extends OwnedItem {
     @Size(max = 32, message = "Account name cannot exceed 32 characters")
     private String name;
 
-    private Long value;
+    private Long value = 0l;
 
     @Valid
     private Account parentAccount;

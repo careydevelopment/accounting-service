@@ -29,6 +29,7 @@ public class PaymentAccountValidatorTest {
         paymentAccount.setName("");
 
         final Set<ConstraintViolation<PaymentAccount>> violations = validator.validate(paymentAccount);
+        System.err.println(violations);
         assertEquals(1, violations.size());
     }
 

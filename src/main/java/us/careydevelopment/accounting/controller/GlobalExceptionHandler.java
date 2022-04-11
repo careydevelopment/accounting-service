@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import us.careydevelopment.accounting.exception.InvalidRequestException;
-import us.careydevelopment.accounting.exception.NotAuthorizedException;
-import us.careydevelopment.accounting.exception.NotFoundException;
-import us.careydevelopment.accounting.exception.UnknownUserException;
+import us.careydevelopment.accounting.exception.*;
 import us.careydevelopment.util.api.model.IRestResponse;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
@@ -16,6 +13,12 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<IRestResponse<Void>> internalErrorException(ServiceException se) {
+        return ResponseEntityUtil.createResponseEntityWithError(se.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<IRestResponse<Void>> notFoundException(NotFoundException ne) {

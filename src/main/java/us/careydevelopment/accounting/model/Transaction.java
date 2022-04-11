@@ -1,11 +1,13 @@
 package us.careydevelopment.accounting.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
+@Document(collection = "#{@environment.getProperty('mongo.transaction.collection')}")
 public class Transaction {
 
     @Id
