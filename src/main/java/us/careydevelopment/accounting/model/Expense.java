@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This is the digital equivalent of an expense receipt, which is why it gets its own collection.
+ *
+ * There's some detail that gets store here that's not relevant to every transaction. It's only specific
+ * to expenses (e.g., payee). As a result, we'll give this one its own collection and reference the relevant
+ * accounts and transactions.
+ */
 @Document(collection = "#{@environment.getProperty('mongo.expense.collection')}")
 public class Expense extends OwnedItem {
 

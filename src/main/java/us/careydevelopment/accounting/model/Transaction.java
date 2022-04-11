@@ -1,12 +1,19 @@
 package us.careydevelopment.accounting.model;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
+/**
+ * A series of Transaction objects is the digital ledger. That's why it gets its own
+ * collection in MongoDB. It will just reference the relevant accounts since there's a
+ * one-to-squillions relationship between account and transaction.
+ */
 @Document(collection = "#{@environment.getProperty('mongo.transaction.collection')}")
 public class Transaction {
 
@@ -70,5 +77,22 @@ public class Transaction {
 
     public void setCreditAmount(Long creditAmount) {
         this.creditAmount = creditAmount;
+    }
+
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

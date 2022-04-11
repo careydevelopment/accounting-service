@@ -1,5 +1,7 @@
 package us.careydevelopment.accounting.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Component
 public class ExpenseValidationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExpenseValidationService.class);
 
     public void validateNew(Expense expense, BindingResult bindingResult) throws InvalidRequestException {
         List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);

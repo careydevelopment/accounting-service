@@ -10,6 +10,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
+/**
+ * Account gets its own collection for a couple of reasons.
+ *
+ * First, I don't think it's efficient to crawl through a list of transactions just to get the current
+ * value.
+ *
+ * Second, there's a one-to-squillions relationship between account and transactions. As a result, it's best
+ * to keep them in separate collections and store the reference to each account in the transaction.
+ */
 @Document(collection = "#{@environment.getProperty('mongo.account.collection')}")
 public class Account extends OwnedItem {
 
