@@ -5,7 +5,16 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
-
+/**
+ * A loghtweight version of the Business object from ecosystem-business-service.
+ *
+ * If the client sends in the ID, then the application will ignore all other properties
+ * and retrieve details from the business service.
+ *
+ * If the client sends in other details but omits the ID, then the details will get embedded
+ * as a child document when the parent gets persisted. But the details won't be persisted
+ * in the business collection.
+ */
 public class BusinessLightweight {
 
     @NotBlank(message = "Business ID is required")
