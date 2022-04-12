@@ -15,6 +15,7 @@ public class AccountHarness {
         account.setName("Telephone");
         account.setId(TELEPHONE_ACCOUNT_ID);
         account.setValue(0l);
+        account.setOwner(UserLightweightHarness.getMrSmithUserLightweight());
 
         return account;
     }
@@ -25,6 +26,7 @@ public class AccountHarness {
         account.setName("Internet");
         account.setId(INTERNET_ACCOUNT_ID);
         account.setValue(0l);
+        account.setOwner(UserLightweightHarness.getMrSmithUserLightweight());
 
         return account;
     }

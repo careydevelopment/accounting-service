@@ -4,9 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -18,23 +16,27 @@ import java.util.Objects;
  *
  * Second, there's a one-to-squillions relationship between account and transactions. As a result, it's best
  * to keep them in separate collections and store the reference to each account in the transaction.
+ *
+ * For persistence: only thing required for an incoming payload is the ID. We're going to restrict them
+ * on string lengths just to keep things from getting too hairy. But that's all that needs to come in.
+ *
+ * Unlike with the business, the ID here is required. Other fields can come in, but they'll get overwritten
+ * if they disagree with what's persisted based on the ID.
  */
 @Document(collection = "#{@environment.getProperty('mongo.account.collection')}")
 public class Account extends OwnedItem {
 
     @Id
+    @NotBlank
+    @Size(max = 32, message = "ID cannot exceed 32 characters")
     private String id;
 
-    @NotNull(message = "Account type is required")
     private AccountType accountType;
 
-    @NotBlank(message = "Account name cannot be blank")
     @Size(max = 32, message = "Account name cannot exceed 32 characters")
     private String name;
 
     private Long value = 0l;
-
-    @Valid
     private Account parentAccount;
 
     @Size(max = 128, message = "Description cannot exceed 128 characters")

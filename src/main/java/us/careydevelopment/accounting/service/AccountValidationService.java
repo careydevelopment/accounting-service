@@ -6,19 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
-import us.careydevelopment.accounting.model.Transaction;
 import us.careydevelopment.accounting.repository.AccountRepository;
+import us.careydevelopment.accounting.util.SecurityUtil;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class AccountService {
+public class AccountValidationService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AccountValidationService.class);
 
     private Validator validator;
 
@@ -26,35 +27,33 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private AccountValidationService accountValidationService;
+    private SecurityUtil securityUtil;
 
-    public AccountService() {
+    public AccountValidationService() {
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    private void validate(Transaction transaction) {
-        final Set<ConstraintViolation<Transaction>> violations = validator.validate(transaction);
+    public void validate(final Account account) {
+        final Set<ConstraintViolation<Account>> violations = validator.validate(account);
 
         if (violations.size() > 0) {
             //TODO: Throwing a ServiceException for now because we should never get here
-            throw new ServiceException("Invalid transaction: " + transaction);
+            throw new ServiceException("Invalid account: " + account);
         }
     }
 
-    public void update(Account account) {
-        accountValidationService.validate(account);
+    public boolean validateOwnership(final String accountId) {
+        boolean isOwner = false;
+        final Optional<Account> accountOpt = accountRepository.findById(accountId);
 
-        //update account values AFTER transaction
-        accountRepository.save(account);
-    }
+        if (accountOpt.isPresent()) {
+            final Account account = accountOpt.get();
+            final String accountOwner = account.getOwner().getUsername();
 
-    public Transaction update(Transaction transaction) {
-        validate(transaction);
+            isOwner = securityUtil.isAuthorizedByUserName(accountOwner);
+        }
 
-        update(transaction.getCreditAccount());
-        update(transaction.getDebitAccount());
-
-        return transaction;
+        return isOwner;
     }
 }

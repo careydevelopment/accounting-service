@@ -2,7 +2,7 @@ package us.careydevelopment.accounting.model;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -17,11 +17,12 @@ import java.util.Objects;
  */
 public class BusinessLightweight {
 
-    @NotBlank(message = "Business ID is required")
     private String id;
 
     private BusinessType businessType = BusinessType.BUSINESS;
     private Person person;
+
+    @Size(max = 50, message = "Business name cannot exceed 50 characters")
     private String name;
 
     public String getId() {

@@ -1,8 +1,13 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class UserLightweight {
 
@@ -10,6 +15,9 @@ public class UserLightweight {
     private String firstName;
     private String lastName;
     private String username;
+
+    @JsonIgnore
+    private Collection<? extends GrantedAuthority> authorities;
 
     public String getId() {
         return id;
@@ -41,6 +49,19 @@ public class UserLightweight {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
+    public List<String> getAuthorityNames() {
+        List<String> names = authorities.stream().map(auth -> auth.getAuthority()).collect(Collectors.toList());
+        return names;
     }
 
     public String toString() {

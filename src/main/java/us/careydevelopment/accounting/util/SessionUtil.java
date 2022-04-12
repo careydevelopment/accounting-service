@@ -1,38 +1,49 @@
 package us.careydevelopment.accounting.util;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-import us.careydevelopment.accounting.exception.UnknownUserException;
-import us.careydevelopment.accounting.model.User;
+import org.springframework.web.context.annotation.RequestScope;
 import us.careydevelopment.accounting.model.UserLightweight;
-import us.careydevelopment.accounting.repository.UserRepository;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @Component
+@RequestScope
 public class SessionUtil {
 
-    @Autowired
-    private UserRepository userRepository;
+    private UserLightweight userLightweight;
+    private String bearerToken;
 
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName());
-
-        if (user == null) throw new UnknownUserException("Do not recognize " + authentication.getName());
-
-        return user;
+    public void init(HttpServletRequest request) {
+        bearerToken = request.getHeader("Authorization");
     }
 
-    public UserLightweight getCurrentUserLightweight() {
-        User user = getCurrentUser();
-
-        UserLightweight lightweight = new UserLightweight();
-        BeanUtils.copyProperties(user, lightweight);
-
-        return lightweight;
+    public void init(String bearerToken) {
+        this.bearerToken = bearerToken;
     }
 
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public UserLightweight getCurrentUser() {
+        if (userLightweight == null) {
+            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            String username = authentication.getPrincipal().toString();
+            if (authentication.getPrincipal() instanceof User) {
+                username = (((User) authentication.getPrincipal()).getUsername());
+            }
+
+            //TODO: may need to go to the user service to get the whole object
+            userLightweight = new UserLightweight();
+            userLightweight.setUsername(username);
+            userLightweight.setAuthorities(authentication.getAuthorities());
+        }
+
+        return userLightweight;
+    }
 }

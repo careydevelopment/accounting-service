@@ -17,6 +17,7 @@ public class PaymentAccountHarness {
         paymentAccount.setId(ID);
         paymentAccount.setValue(BANK_VALUE);
         paymentAccount.setPaymentAccountDetailType(PaymentAccountDetailType.CHECKING);
+        paymentAccount.setOwner(UserLightweightHarness.getMrSmithUserLightweight());
 
         return paymentAccount;
     }

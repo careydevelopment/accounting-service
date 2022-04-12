@@ -2,6 +2,7 @@ package us.careydevelopment.accounting.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.BusinessLightweight;
+import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.RestResponse;
 
 import java.time.Duration;
@@ -22,6 +24,9 @@ public class BusinessService {
 
     private WebClient businessClient;
 
+    @Autowired
+    private SessionUtil sessionUtil;
+
     public BusinessService(@Value("${ecosystem-business-service.endpoint}") String endpoint) {
         businessClient = WebClient
 	        		.builder()
@@ -32,10 +37,16 @@ public class BusinessService {
 	        		.build();
     }
 
+    public BusinessLightweight fetchBusiness(String id) {
+        final String bearerToken = sessionUtil.getBearerToken();
+        final BusinessLightweight business = fetchBusiness(bearerToken, id);
+        return business;
+    }
+
     public BusinessLightweight fetchBusiness(String bearerToken, String id) {
         RestResponse<BusinessLightweight> response = businessClient.get()
                                         .uri("/businesses/" + id)
-                                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken)
+                                        .header(HttpHeaders.AUTHORIZATION, bearerToken)
                                         .retrieve()
                                         .bodyToMono(new ParameterizedTypeReference<RestResponse<BusinessLightweight>>() {})
                                         .retryWhen(Retry.backoff(3, Duration.ofSeconds(5))
