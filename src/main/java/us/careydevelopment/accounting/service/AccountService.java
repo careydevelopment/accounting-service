@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
 import us.careydevelopment.accounting.model.Transaction;
@@ -40,6 +42,13 @@ public class AccountService {
             //TODO: Throwing a ServiceException for now because we should never get here
             throw new ServiceException("Invalid transaction: " + transaction);
         }
+    }
+
+    public Account create(final Account account, final BindingResult bindingResult) throws InvalidRequestException {
+        accountValidationService.validateNew(account, bindingResult);
+
+        final Account returnedAccount = accountRepository.save(account);
+        return returnedAccount;
     }
 
     public void update(Account account) {

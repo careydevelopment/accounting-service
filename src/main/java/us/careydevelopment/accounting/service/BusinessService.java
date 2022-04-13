@@ -8,19 +8,21 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.util.retry.Retry;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.BusinessLightweight;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.RestResponse;
-
-import java.time.Duration;
 
 
 @Service
 public class BusinessService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessService.class);
+
+    private static final int SECONDS_DELAY_BETWEEN_RETRIES = 3;
+    private static final int MAX_RETRIES = 1;
 
     private WebClient businessClient;
 
@@ -33,7 +35,7 @@ public class BusinessService {
 	        		.baseUrl(endpoint)
 	        		.filter(WebClientFilter.logRequest())
 	        		.filter(WebClientFilter.logResponse())
-	        		.filter(WebClientFilter.handleError())
+	        		//.filter(WebClientFilter.handleError())
 	        		.build();
     }
 
@@ -44,19 +46,24 @@ public class BusinessService {
     }
 
     public BusinessLightweight fetchBusiness(String bearerToken, String id) {
-        RestResponse<BusinessLightweight> response = businessClient.get()
-                                        .uri("/businesses/" + id)
-                                        .header(HttpHeaders.AUTHORIZATION, bearerToken)
-                                        .retrieve()
-                                        .bodyToMono(new ParameterizedTypeReference<RestResponse<BusinessLightweight>>() {})
-                                        .retryWhen(Retry.backoff(3, Duration.ofSeconds(5))
-                                                .filter(ex -> WebClientFilter.is5xxException(ex))
-                                                .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                                    new ServiceException("Max retry attempts reached")))
-                                        .block();
+        try {
+            RestResponse<BusinessLightweight> response = businessClient.get()
+                    .uri("/businesses/" + id)
+                    .header(HttpHeaders.AUTHORIZATION, bearerToken)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<RestResponse<BusinessLightweight>>() {
+                    })
+                    .block();
 
-        BusinessLightweight business = response.getResponse();
+            BusinessLightweight business = (response != null) ? response.getResponse() : null;
 
-        return business;
+            return business;
+        } catch (WebClientResponseException.NotFound nfe) {
+            LOG.error("Business with ID " + id + " doesn't exist");
+            throw new NotFoundException("Business with ID " + id + " doesn't exist");
+        } catch (Exception e) {
+            LOG.error("Problem trying to retrieve Business ID " + id);
+            throw new ServiceException(e.getMessage());
+        }
     }
 }

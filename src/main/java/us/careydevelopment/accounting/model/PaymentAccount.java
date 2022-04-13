@@ -5,6 +5,11 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+/**
+ * This class extends account but provides additional info unique to payment accounts,
+ * such as the payment account type (Bank or other current asset) as well
+ * as payment detail type (checking account, trust, etc.).
+ */
 public class PaymentAccount extends Account {
 
     public PaymentAccount() {

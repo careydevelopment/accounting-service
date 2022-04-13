@@ -11,11 +11,13 @@ import us.careydevelopment.accounting.harness.PaymentAccountHarness;
 import us.careydevelopment.accounting.harness.SinglePaymentHarness;
 import us.careydevelopment.accounting.harness.UserLightweightHarness;
 import us.careydevelopment.accounting.model.*;
+import us.careydevelopment.accounting.repository.TransactionRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +32,9 @@ public class TransactionServiceTest {
 
     @Mock
     private AccountService accountService;
+
+    @Mock
+    private TransactionRepository transactionRepository;
 
     @InjectMocks
     private TransactionService transactionService;
@@ -78,6 +83,8 @@ public class TransactionServiceTest {
         creditAccount.setValue(INITIAL_BANK_ACCOUNT_VALUE);
 
         final List<SinglePayment> payments = List.of(payment1, payment2);
+
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
 
         payments.forEach(payment -> {
             transactionService.transact(payment, creditAccount);
@@ -147,6 +154,7 @@ public class TransactionServiceTest {
 
         transaction.setId(PHONE_BILL_ID);
 
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
         when(accountService.update(transaction)).thenThrow(new RuntimeException("yo!"));
 
         assertThrows(ServiceException.class, () -> transactionService.transact(transaction));

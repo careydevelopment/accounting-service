@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
+import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.AccountRepository;
@@ -15,6 +16,7 @@ import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.validation.ValidationUtil;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -35,12 +37,33 @@ public class ExpenseValidationService {
     private AccountValidationService accountValidationService;
 
     public void validateNew(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
+        sanitizeData(expense);
+
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 
         handleCustomValidation(expense, errors);
 
         if (errors.size() > 0) {
             throw new InvalidRequestException("Expense is not valid", errors);
+        }
+    }
+
+    @VisibleForTesting
+    void sanitizeData(final Expense expense) {
+        if (expense.getDate() == null) {
+            expense.setDate(new Date().getTime());
+        }
+
+        if (expense.getPayments() != null) {
+            expense.getPayments().forEach(payment -> {
+                if (payment.getDate() == null) {
+                    payment.setDate(expense.getDate());
+                }
+
+                if (payment.getAmount() == null) {
+                    payment.setAmount(0l);
+                }
+            });
         }
     }
 
@@ -103,13 +126,11 @@ public class ExpenseValidationService {
         if (!StringUtils.isBlank(businessId)) {
             try {
                 BusinessLightweight lightweight = businessService.fetchBusiness(businessId);
-
-                if (lightweight == null) {
-                    ValidationUtil.addError(errors, "Business ID is not valid", "id", null);
-                } else {
-                    expense.setPayee(lightweight);
-                }
+                expense.setPayee(lightweight);
+            } catch (NotFoundException nfe) {
+                ValidationUtil.addError(errors, "Business ID is not valid", "payee.id", null);
             } catch (Exception e) {
+                LOG.error("Problem trying to fetch busineess by ID " + businessId, e);
                 throw new ServiceException("Problem retrieving business by ID " + businessId);
             }
         }

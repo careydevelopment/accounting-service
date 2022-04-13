@@ -39,7 +39,7 @@ public class SinglePaymentValidatorTest {
     @Test
     public void testInvalidAccount() {
         final Account account = AccountHarness.getTelephoneExpenseAccount();
-        account.setName("");
+        account.setId("");
 
         final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
         final SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(account, 32l, "37", owner);

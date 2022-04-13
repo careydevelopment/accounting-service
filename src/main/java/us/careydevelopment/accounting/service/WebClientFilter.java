@@ -50,13 +50,24 @@ public class WebClientFilter {
 
     public static ExchangeFilterFunction handleError() {
         return ExchangeFilterFunction.ofResponseProcessor(response -> {
-            if (response.statusCode() != null
-                    && (response.statusCode().is4xxClientError() || response.statusCode().is5xxServerError())) {
-                return response.bodyToMono(String.class).defaultIfEmpty(response.statusCode().getReasonPhrase())
-                        .flatMap(body -> {
-                            LOG.debug("Body is {}", body);
-                            return Mono.error(new ServiceException(body));
-                        });
+            if (response.statusCode() != null) {
+//                    if (response.statusCode().value() == 404) {
+//                        return response.bodyToMono(String.class).defaultIfEmpty(response.statusCode().getReasonPhrase())
+//                                .flatMap(body -> {
+//                                    LOG.debug("Body is {}", body);
+//                                    return Mono.error(new NotFoundException(body));
+//                                });
+//                    }
+
+                    if ((response.statusCode().is4xxClientError() || response.statusCode().is5xxServerError())) {
+                        return response.bodyToMono(String.class).defaultIfEmpty(response.statusCode().getReasonPhrase())
+                                .flatMap(body -> {
+                                    LOG.debug("Body is {}", body);
+                                    return Mono.error(new ServiceException(body));
+                                });
+                    }
+
+                    return Mono.just(response);
             } else {
                 return Mono.just(response);
             }

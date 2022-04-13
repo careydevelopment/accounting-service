@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.harness.ExpenseHarness;
 import us.careydevelopment.accounting.model.Expense;
@@ -40,12 +41,12 @@ public class ExpenseValidationServiceTest {
     }
 
     @Test
-    public void testValidateBusinessExistsWithInvaliId() {
+    public void testValidateBusinessExistsWithInvaliId() throws Exception {
         final List<ValidationError> errors = new ArrayList<>();
 
         final Expense expense = ExpenseHarness.getValidTelephoneExpense();
 
-        when(businessService.fetchBusiness(anyString())).thenReturn(null);
+        when(businessService.fetchBusiness(anyString())).thenThrow(new NotFoundException("Not found!"));
 
         expenseValidationService.validateBusinessExists(expense, errors);
 
@@ -55,7 +56,7 @@ public class ExpenseValidationServiceTest {
     }
 
     @Test
-    public void testValidateBusinessExistsWithException() {
+    public void testValidateBusinessExistsWithException() throws Exception {
         final List<ValidationError> errors = new ArrayList<>();
 
         final Expense expense = ExpenseHarness.getValidTelephoneExpense();

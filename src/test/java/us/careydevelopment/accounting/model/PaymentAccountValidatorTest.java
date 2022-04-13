@@ -24,12 +24,11 @@ public class PaymentAccountValidatorTest {
     }
 
     @Test
-    public void testEmptyName() {
+    public void testEmptyId() {
         final PaymentAccount paymentAccount = PaymentAccountHarness.getValidBankPaymentAccount();
-        paymentAccount.setName("");
+        paymentAccount.setId("");
 
         final Set<ConstraintViolation<PaymentAccount>> violations = validator.validate(paymentAccount);
-        System.err.println(violations);
         assertEquals(1, violations.size());
     }
 

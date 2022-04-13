@@ -9,6 +9,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
+/**
+ * Represents a single payment.
+ *
+ * The account referenced here must be an expense account.
+ */
 public class SinglePayment extends OwnedItem {
 
     @Id

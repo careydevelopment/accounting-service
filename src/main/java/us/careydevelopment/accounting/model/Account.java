@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -27,7 +26,6 @@ import java.util.Objects;
 public class Account extends OwnedItem {
 
     @Id
-    @NotBlank
     @Size(max = 32, message = "ID cannot exceed 32 characters")
     private String id;
 
