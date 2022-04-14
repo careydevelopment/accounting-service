@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
-import us.careydevelopment.accounting.model.BusinessLightweight;
+import us.careydevelopment.accounting.model.Business;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.RestResponse;
 
@@ -39,23 +39,23 @@ public class BusinessService {
 	        		.build();
     }
 
-    public BusinessLightweight fetchBusiness(String id) {
+    public Business fetchBusiness(String id) {
         final String bearerToken = sessionUtil.getBearerToken();
-        final BusinessLightweight business = fetchBusiness(bearerToken, id);
+        final Business business = fetchBusiness(bearerToken, id);
         return business;
     }
 
-    public BusinessLightweight fetchBusiness(String bearerToken, String id) {
+    public Business fetchBusiness(String bearerToken, String id) {
         try {
-            RestResponse<BusinessLightweight> response = businessClient.get()
+            RestResponse<Business> response = businessClient.get()
                     .uri("/businesses/" + id)
                     .header(HttpHeaders.AUTHORIZATION, bearerToken)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<RestResponse<BusinessLightweight>>() {
+                    .bodyToMono(new ParameterizedTypeReference<RestResponse<Business>>() {
                     })
                     .block();
 
-            BusinessLightweight business = (response != null) ? response.getResponse() : null;
+            Business business = (response != null) ? response.getResponse() : null;
 
             return business;
         } catch (WebClientResponseException.NotFound nfe) {

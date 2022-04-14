@@ -1,9 +1,11 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import javax.validation.constraints.Size;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Person {
 
     @Size(max = 32, message = "First name cannot exceed 32 characters")

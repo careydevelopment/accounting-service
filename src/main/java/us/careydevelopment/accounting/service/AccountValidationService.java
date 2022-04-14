@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
+import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.repository.AccountRepository;
 import us.careydevelopment.accounting.util.SecurityUtil;
 import us.careydevelopment.util.api.model.ValidationError;
@@ -63,6 +64,42 @@ public class AccountValidationService {
     }
 
     @VisibleForTesting
+    public void validateNewPaymentAccount(final PaymentAccount account, final BindingResult bindingResult) throws InvalidRequestException {
+        final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
+
+        handleCustomValidationForNew(account, errors);
+        handleCustomValidationForNewPaymentAccount(account, errors);
+
+        if (errors.size() > 0) {
+            throw new InvalidRequestException("Account is not valid", errors);
+        }
+    }
+
+    @VisibleForTesting
+    void handleCustomValidationForNewPaymentAccount(final PaymentAccount account, final List<ValidationError> errors) {
+        if (account != null) {
+            if (account.getPaymentAccountType() == null) {
+                ValidationUtil.addError(errors, "Payment account type required",
+                        "paymentAccountType", null);
+            }
+
+            if (account.getPaymentAccountDetailType() == null) {
+                ValidationUtil.addError(errors, "Payment account detail type required",
+                        "paymentAccountDetailType", null);
+            }
+        }
+    }
+
+    public boolean accountNameExists(final String accountName) {
+        boolean exists = false;
+
+        final Account account = accountRepository.findByName(accountName);
+        if (account != null) exists = true;
+
+        return exists;
+    }
+
+    @VisibleForTesting
     void handleCustomValidationForNew(final Account account, final List<ValidationError> errors) {
         if (account != null) {
             if (StringUtils.isBlank(account.getName())) {
@@ -78,6 +115,16 @@ public class AccountValidationService {
             if (account.getAccountType() == null) {
                 ValidationUtil.addError(errors, "Account type required",
                         "accountType", null);
+            }
+
+            if (account.getOwner() != null) {
+                ValidationUtil.addError(errors, "Owner will be assigned",
+                        "owner", null);
+            }
+
+            if (accountNameExists(account.getName())) {
+                ValidationUtil.addError(errors, "Account name already exists",
+                        "name", null);
             }
         }
     }

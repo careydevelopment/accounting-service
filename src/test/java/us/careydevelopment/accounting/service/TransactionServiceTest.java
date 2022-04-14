@@ -64,7 +64,7 @@ public class TransactionServiceTest {
 
     @Test
     public void testMultiplePayments() {
-        final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
+        final User owner = UserLightweightHarness.getMrSmithUserLightweight();
         final String phoneExpenseAccountId = "43";
         final Account phoneExpenseAccount = AccountHarness.getTelephoneExpenseAccount();
         phoneExpenseAccount.setValue(INITIAL_PHONE_EXPENSE_VALUE);

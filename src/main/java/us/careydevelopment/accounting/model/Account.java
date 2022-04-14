@@ -1,8 +1,11 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import us.careydevelopment.accounting.util.LongFromIntegerDeserializer;
 
 import javax.validation.constraints.Size;
 import java.util.Objects;
@@ -23,6 +26,7 @@ import java.util.Objects;
  * if they disagree with what's persisted based on the ID.
  */
 @Document(collection = "#{@environment.getProperty('mongo.account.collection')}")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends OwnedItem {
 
     @Id
@@ -34,7 +38,9 @@ public class Account extends OwnedItem {
     @Size(max = 32, message = "Account name cannot exceed 32 characters")
     private String name;
 
+    @JsonDeserialize(using = LongFromIntegerDeserializer.class)
     private Long value = 0l;
+
     private Account parentAccount;
 
     @Size(max = 128, message = "Description cannot exceed 128 characters")

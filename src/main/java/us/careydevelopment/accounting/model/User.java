@@ -1,7 +1,9 @@
 package us.careydevelopment.accounting.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.data.annotation.Transient;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -9,7 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserLightweight {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class User {
 
     private String id;
     private String firstName;
@@ -17,6 +20,7 @@ public class UserLightweight {
     private String username;
 
     @JsonIgnore
+    @Transient
     private Collection<? extends GrantedAuthority> authorities;
 
     public String getId() {
@@ -59,6 +63,7 @@ public class UserLightweight {
         this.authorities = authorities;
     }
 
+    @JsonIgnore
     public List<String> getAuthorityNames() {
         List<String> names = authorities.stream().map(auth -> auth.getAuthority()).collect(Collectors.toList());
         return names;
@@ -72,8 +77,8 @@ public class UserLightweight {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserLightweight that = (UserLightweight) o;
-        return Objects.equals(id, that.id);
+        User that = (User) o;
+        return Objects.equals(username, that.username);
     }
 
     @Override

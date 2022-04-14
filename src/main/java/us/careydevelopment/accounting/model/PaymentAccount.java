@@ -1,5 +1,6 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import java.util.Objects;
  * such as the payment account type (Bank or other current asset) as well
  * as payment detail type (checking account, trust, etc.).
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentAccount extends Account {
 
     public PaymentAccount() {

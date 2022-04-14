@@ -1,5 +1,6 @@
 package us.careydevelopment.accounting.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Expense;
 import us.careydevelopment.accounting.repository.ExpenseRepository;
 
+import java.util.Date;
+
 @Component
-public class ExpenseService {
+public class ExpenseService extends BaseService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExpenseService.class);
 
@@ -27,10 +30,35 @@ public class ExpenseService {
 
     @Transactional
     public Expense postExpense(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
+        sanitizeData(expense);
+
         validationService.validateNew(expense, bindingResult);
 
         final Expense returnedExpense = postExpense(expense);
         return returnedExpense;
+    }
+
+    @VisibleForTesting
+    void sanitizeData(final Expense expense) {
+        if (expense.getDate() == null) {
+            expense.setDate(new Date().getTime());
+        }
+
+        if (expense.getPayments() != null) {
+            expense.getPayments().forEach(payment -> {
+                if (payment.getDate() == null) {
+                    payment.setDate(expense.getDate());
+                }
+
+                if (payment.getAmount() == null) {
+                    payment.setAmount(0l);
+                }
+
+                setOwner(payment);
+            });
+        }
+
+        setOwner(expense);
     }
 
     private Expense postExpense(final Expense expense) {

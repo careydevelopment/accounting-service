@@ -1,5 +1,6 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +16,7 @@ import java.util.Objects;
  * one-to-squillions relationship between account and transaction.
  */
 @Document(collection = "#{@environment.getProperty('mongo.transaction.collection')}")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Transaction {
 
     @Id

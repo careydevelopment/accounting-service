@@ -1,7 +1,10 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
+import us.careydevelopment.accounting.util.LongFromIntegerDeserializer;
 import us.careydevelopment.accounting.validator.ExpenseAccount;
 
 import javax.validation.Valid;
@@ -14,6 +17,7 @@ import java.util.Objects;
  *
  * The account referenced here must be an expense account.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SinglePayment extends OwnedItem {
 
     @Id
@@ -27,7 +31,9 @@ public class SinglePayment extends OwnedItem {
     @Size(max = 128, message = "Description cannot exceed 128 characters")
     private String description;
 
+    @JsonDeserialize(using = LongFromIntegerDeserializer.class)
     private Long amount;
+
     private Long date;
 
     public String getId() {

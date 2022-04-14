@@ -2,10 +2,9 @@ package us.careydevelopment.accounting.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
-import us.careydevelopment.accounting.model.UserLightweight;
+import us.careydevelopment.accounting.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestScope
 public class SessionUtil {
 
-    private UserLightweight userLightweight;
+    private User userLightweight;
     private String bearerToken;
 
     public void init(HttpServletRequest request) {
@@ -29,7 +28,7 @@ public class SessionUtil {
         return bearerToken;
     }
 
-    public UserLightweight getCurrentUser() {
+    public User getCurrentUser() {
         if (userLightweight == null) {
             final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -39,7 +38,7 @@ public class SessionUtil {
             }
 
             //TODO: may need to go to the user service to get the whole object
-            userLightweight = new UserLightweight();
+            userLightweight = new User();
             userLightweight.setUsername(username);
             userLightweight.setAuthorities(authentication.getAuthorities());
         }

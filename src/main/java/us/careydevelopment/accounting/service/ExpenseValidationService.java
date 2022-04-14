@@ -12,12 +12,14 @@ import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.AccountRepository;
+import us.careydevelopment.accounting.repository.PaymentAccountRepository;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.validation.ValidationUtil;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ExpenseValidationService {
@@ -36,9 +38,10 @@ public class ExpenseValidationService {
     @Autowired
     private AccountValidationService accountValidationService;
 
-    public void validateNew(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
-        sanitizeData(expense);
+    @Autowired
+    private PaymentAccountRepository paymentAccountRepository;
 
+    public void validateNew(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 
         handleCustomValidation(expense, errors);
@@ -49,56 +52,71 @@ public class ExpenseValidationService {
     }
 
     @VisibleForTesting
-    void sanitizeData(final Expense expense) {
-        if (expense.getDate() == null) {
-            expense.setDate(new Date().getTime());
-        }
-
-        if (expense.getPayments() != null) {
-            expense.getPayments().forEach(payment -> {
-                if (payment.getDate() == null) {
-                    payment.setDate(expense.getDate());
-                }
-
-                if (payment.getAmount() == null) {
-                    payment.setAmount(0l);
-                }
-            });
-        }
-    }
-
-    @VisibleForTesting
     void handleCustomValidation(final Expense expense, final List<ValidationError> errors) {
         validateBusiness(expense, errors);
-        validateOwnership(expense, errors);
+        validateAccounts(expense, errors);
     }
 
     @VisibleForTesting
-    void validateOwnership(final Expense expense, final List<ValidationError> errors) {
-        validatePaymentAccountOwnership(expense.getPaymentAccount(), errors);
-        validatePaymentsOwnership(expense.getPayments(), errors);
+    void validateAccounts(final Expense expense, final List<ValidationError> errors) {
+        validatePaymentAccount(expense, errors);
+        validatePayments(expense, errors);
     }
 
     @VisibleForTesting
-    void validatePaymentsOwnership(final List<SinglePayment> payments, final List<ValidationError> errors) {
+    void validatePayments(final Expense expense, final List<ValidationError> errors) {
+        final List<SinglePayment> payments = expense.getPayments();
+        AtomicInteger counter = new AtomicInteger(0);
+
         payments.forEach(payment -> {
             final Account account = payment.getAccount();
-            final boolean authorized = accountValidationService.validateOwnership(account.getId());
+            counter.getAndIncrement();
 
-            if (!authorized) {
-                ValidationUtil.addError(errors, "You aren't the owner of the account: " + account.getName(),
-                        "account", null);
+            if (!StringUtils.isBlank(account.getId())) {
+                final Optional<Account> acct = accountRepository.findById(account.getId());
+
+                if (acct.isPresent()) {
+                    if (sessionUtil.getCurrentUser().equals(acct.get().getOwner())) {
+                        payment.setAccount(acct.get());
+                    } else {
+                        ValidationUtil.addError(errors, "You aren't the owner of the account: " + account.getName(),
+                                "account.owner", null);
+                    }
+                } else {
+                    ValidationUtil.addError(errors, "Account with ID: " + account.getId() + " doesn't exist",
+                            "account.id", null);
+                }
+            } else {
+                ValidationUtil.addError(errors, "Payment " + counter.get() + " account doesn't have a valid ID",
+                        "account.id", null);
             }
         });
     }
 
     @VisibleForTesting
-    void validatePaymentAccountOwnership(final PaymentAccount paymentAccount, final List<ValidationError> errors) {
-        final boolean authorized = accountValidationService.validateOwnership(paymentAccount.getId());
+    void validatePaymentAccount(final Expense expense, final List<ValidationError> errors) {
+        final PaymentAccount paymentAccount = expense.getPaymentAccount();
 
-        if (!authorized) {
-            ValidationUtil.addError(errors, "You aren't the owner of the payment account: " + paymentAccount.getName(),
-                    "paymentAccount", null);
+        if (!StringUtils.isBlank(paymentAccount.getId())) {
+            final Optional<PaymentAccount> retrievedAccount = paymentAccountRepository.findById(paymentAccount.getId());
+
+            if (retrievedAccount.isPresent()) {
+                final User user = sessionUtil.getCurrentUser();
+                final boolean authorized = user.equals(retrievedAccount.get().getOwner());
+
+                if (authorized) {
+                    expense.setPaymentAccount(retrievedAccount.get());
+                } else {
+                    ValidationUtil.addError(errors, "You aren't the owner of the payment account: " + paymentAccount.getName(),
+                            "paymentAccount.owner", null);
+                }
+            } else {
+                ValidationUtil.addError(errors, "Payment account with ID: " + paymentAccount.getId() + " doesn't exist!",
+                        "paymentAccount.id", null);
+            }
+        } else {
+            ValidationUtil.addError(errors, "Payment account ID is required",
+                    "paymentAccount.id", null);
         }
     }
 
@@ -109,7 +127,7 @@ public class ExpenseValidationService {
     }
 
     @VisibleForTesting
-    void validateNameOrId(final BusinessLightweight business, final List<ValidationError> errors) {
+    void validateNameOrId(final Business business, final List<ValidationError> errors) {
         final String businessName = business.getName();
         final String businessId = business.getId();
 
@@ -120,12 +138,12 @@ public class ExpenseValidationService {
 
     @VisibleForTesting
     void validateBusinessExists(final Expense expense, final List<ValidationError> errors) {
-        final BusinessLightweight business = expense.getPayee();
+        final Business business = expense.getPayee();
         final String businessId = business.getId();
 
         if (!StringUtils.isBlank(businessId)) {
             try {
-                BusinessLightweight lightweight = businessService.fetchBusiness(businessId);
+                Business lightweight = businessService.fetchBusiness(businessId);
                 expense.setPayee(lightweight);
             } catch (NotFoundException nfe) {
                 ValidationUtil.addError(errors, "Business ID is not valid", "payee.id", null);

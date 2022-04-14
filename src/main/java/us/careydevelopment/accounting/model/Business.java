@@ -1,5 +1,6 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import javax.validation.constraints.Size;
@@ -15,7 +16,8 @@ import java.util.Objects;
  * as a child document when the parent gets persisted. But the details won't be persisted
  * in the business collection.
  */
-public class BusinessLightweight {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Business {
 
     private String id;
 
@@ -65,7 +67,7 @@ public class BusinessLightweight {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BusinessLightweight business = (BusinessLightweight) o;
+        Business business = (Business) o;
         return Objects.equals(id, business.id);
     }
 

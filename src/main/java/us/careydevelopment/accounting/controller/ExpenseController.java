@@ -3,20 +3,21 @@ package us.careydevelopment.accounting.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.model.Expense;
+import us.careydevelopment.accounting.service.ExpenseService;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.IRestResponse;
+import us.careydevelopment.util.api.response.ResponseEntityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 
 @RestController
@@ -27,19 +28,15 @@ public class ExpenseController {
     @Autowired
     private SessionUtil sessionUtil;
 
-    @GetMapping("/expenses")
-    public ResponseEntity<IRestResponse<List<Expense>>> retrieveExpenses(final HttpServletRequest request)
-            throws InvalidRequestException {
+    @Autowired
+    private ExpenseService expenseService;
 
-
-        //sessionUtil.getCurrentUser();
-        System.err.println("in here");
-
-        sessionUtil.getCurrentUser();
-        System.err.println(sessionUtil.getBearerToken());
-        return null;
-    }
-
+//    @GetMapping("/expenses")
+//    public ResponseEntity<IRestResponse<List<Expense>>> retrieveExpenses(final HttpServletRequest request)
+//            throws InvalidRequestException {
+//
+//        return null;
+//    }
 
     @PostMapping("/expenses")
     public ResponseEntity<IRestResponse<Expense>> postExpense(final HttpServletRequest request,
@@ -48,13 +45,10 @@ public class ExpenseController {
                                                                     throws InvalidRequestException {
         LOG.debug("Posting expense: " + expense);
 
+        Expense returnedExpense = expenseService.postExpense(expense, bindingResult);
 
-
-        return null;
-//        final Business returnedBusiness = businessService.save(business, bindingResult);
-//
-//        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
-//                HttpStatus.CREATED.value(),
-//                returnedBusiness);
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully posted expense!",
+                HttpStatus.CREATED.value(),
+                returnedExpense);
     }
 }

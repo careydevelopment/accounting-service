@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.model.Account;
+import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.service.AccountService;
 import us.careydevelopment.util.api.model.IRestResponse;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
@@ -28,7 +29,7 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("/accounts")
-    public ResponseEntity<IRestResponse<Account>> createBusiness(final HttpServletRequest request,
+    public ResponseEntity<IRestResponse<Account>> createAccount(final HttpServletRequest request,
                                                                  @Valid @RequestBody final Account account,
                                                                  final BindingResult bindingResult)
                                                                     throws InvalidRequestException {
@@ -37,6 +38,21 @@ public class AccountController {
         final Account returnedAccount = accountService.create(account, bindingResult);
 
         return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/payment-accounts")
+    public ResponseEntity<IRestResponse<Account>> createPaymentAccount(final HttpServletRequest request,
+                                                                @Valid @RequestBody final PaymentAccount account,
+                                                                final BindingResult bindingResult)
+                                                                throws InvalidRequestException {
+
+        LOG.debug("Adding payment account: " + account);
+
+        final PaymentAccount returnedAccount = accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created payment account!",
                 HttpStatus.CREATED.value(),
                 returnedAccount);
     }

@@ -2,14 +2,14 @@ package us.careydevelopment.accounting.harness;
 
 import us.careydevelopment.accounting.model.Account;
 import us.careydevelopment.accounting.model.SinglePayment;
-import us.careydevelopment.accounting.model.UserLightweight;
+import us.careydevelopment.accounting.model.User;
 
 import java.util.Date;
 
 public class SinglePaymentHarness {
 
     public static SinglePayment getSinglePayment(final Account account, final Long amount, final String id,
-                                               final UserLightweight owner) {
+                                               final User owner) {
 
         final SinglePayment singlePayment = new SinglePayment();
         singlePayment.setAmount(amount);

@@ -1,14 +1,17 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class OwnedItem {
 
-    private UserLightweight owner;
+    private User owner;
 
-    public UserLightweight getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(UserLightweight owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 }

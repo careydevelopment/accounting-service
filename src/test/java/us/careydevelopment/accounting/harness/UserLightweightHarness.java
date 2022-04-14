@@ -1,14 +1,14 @@
 package us.careydevelopment.accounting.harness;
 
-import us.careydevelopment.accounting.model.UserLightweight;
+import us.careydevelopment.accounting.model.User;
 
 public class UserLightweightHarness {
 
     public static final String ID = "34922";
     public static final String USERNAME = "mrsmith";
 
-    public static UserLightweight getMrSmithUserLightweight() {
-        final UserLightweight lightweight = new UserLightweight();
+    public static User getMrSmithUserLightweight() {
+        final User lightweight = new User();
         lightweight.setId(ID);
         lightweight.setUsername(USERNAME);
 

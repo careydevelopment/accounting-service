@@ -1,5 +1,6 @@
 package us.careydevelopment.accounting.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +21,7 @@ import java.util.Objects;
  * accounts and transactions.
  */
 @Document(collection = "#{@environment.getProperty('mongo.expense.collection')}")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Expense extends OwnedItem {
 
     @Id
@@ -27,13 +29,12 @@ public class Expense extends OwnedItem {
 
     @Valid
     @NotNull
-    private BusinessLightweight payee;
+    private Business payee;
 
     @Valid
     @NotNull
     private PaymentAccount paymentAccount;
 
-    @NotNull(message = "Expense date is required")
     private Long date;
 
     @NotNull(message = "Payment method is required")
@@ -59,11 +60,11 @@ public class Expense extends OwnedItem {
         this.id = id;
     }
 
-    public BusinessLightweight getPayee() {
+    public Business getPayee() {
         return payee;
     }
 
-    public void setPayee(BusinessLightweight payee) {
+    public void setPayee(Business payee) {
         this.payee = payee;
     }
 

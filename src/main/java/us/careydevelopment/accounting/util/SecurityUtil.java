@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import us.careydevelopment.accounting.model.UserLightweight;
+import us.careydevelopment.accounting.model.User;
 import us.careydevelopment.ecosystem.jwt.constants.Authority;
 
 @Component
@@ -18,7 +18,7 @@ public class SecurityUtil {
     public boolean isAuthorizedByUserName(String userName) {
         boolean authorized = false;
 
-        UserLightweight user = sessionUtil.getCurrentUser();
+        User user = sessionUtil.getCurrentUser();
 
         if (user != null && userName != null) {
             if (user.getUsername() != null) {

@@ -28,7 +28,7 @@ public class SinglePaymentValidatorTest {
     @Test
     public void testDescriptionExceedsLength() {
         final Account account = AccountHarness.getTelephoneExpenseAccount();
-        final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
+        final User owner = UserLightweightHarness.getMrSmithUserLightweight();
         final SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(account, 32l, "37", owner);
         singlePayment.setDescription(RandomStringGenerator.generateStringOfLength(129));
 
@@ -41,7 +41,7 @@ public class SinglePaymentValidatorTest {
         final Account account = AccountHarness.getTelephoneExpenseAccount();
         account.setId("");
 
-        final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
+        final User owner = UserLightweightHarness.getMrSmithUserLightweight();
         final SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(account, 32l, "37", owner);
 
         final Set<ConstraintViolation<SinglePayment>> violations = validator.validate(singlePayment);
@@ -50,7 +50,7 @@ public class SinglePaymentValidatorTest {
 
     @Test
     public void testNullAccount() {
-        final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
+        final User owner = UserLightweightHarness.getMrSmithUserLightweight();
         final SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(null, 32l, "37", owner);
 
         final Set<ConstraintViolation<SinglePayment>> violations = validator.validate(singlePayment);
@@ -60,7 +60,7 @@ public class SinglePaymentValidatorTest {
     @Test
     public void testNonExpenseAccount() {
         final Account account = AccountHarness.getSalesRevenueAccount();
-        final UserLightweight owner = UserLightweightHarness.getMrSmithUserLightweight();
+        final User owner = UserLightweightHarness.getMrSmithUserLightweight();
         final SinglePayment singlePayment = SinglePaymentHarness.getSinglePayment(account, 32l, "37", owner);
 
         final Set<ConstraintViolation<SinglePayment>> violations = validator.validate(singlePayment);
