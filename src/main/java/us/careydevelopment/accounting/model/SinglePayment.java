@@ -34,6 +34,7 @@ public class SinglePayment extends OwnedItem {
     @JsonDeserialize(using = LongFromIntegerDeserializer.class)
     private Long amount;
 
+    //Date is always a long in epoch millseconds UTC
     private Long date;
 
     public String getId() {

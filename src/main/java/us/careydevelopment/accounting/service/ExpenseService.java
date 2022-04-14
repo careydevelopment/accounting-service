@@ -11,8 +11,7 @@ import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Expense;
 import us.careydevelopment.accounting.repository.ExpenseRepository;
-
-import java.util.Date;
+import us.careydevelopment.accounting.util.DateUtil;
 
 @Component
 public class ExpenseService extends BaseService {
@@ -41,7 +40,7 @@ public class ExpenseService extends BaseService {
     @VisibleForTesting
     void sanitizeData(final Expense expense) {
         if (expense.getDate() == null) {
-            expense.setDate(new Date().getTime());
+            expense.setDate(DateUtil.currentTime());
         }
 
         if (expense.getPayments() != null) {

@@ -35,6 +35,7 @@ public class Expense extends OwnedItem {
     @NotNull
     private PaymentAccount paymentAccount;
 
+    //Date is always a long in epoch millseconds UTC
     private Long date;
 
     @NotNull(message = "Payment method is required")
