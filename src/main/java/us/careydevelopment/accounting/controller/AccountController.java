@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
@@ -57,20 +58,19 @@ public class AccountController {
                 returnedAccount);
     }
 
-//    @PutMapping("/businesses")
-//    public ResponseEntity<IRestResponse<Business>> updateBusiness(final HttpServletRequest request,
-//                                                                  @Valid @RequestBody final Business business,
-//                                                                  final BindingResult bindingResult)
-//                                                                    throws InvalidRequestException,
-//                                                                            NotFoundException, NotAuthorizedException {
-//        LOG.debug("Updating business: " + business);
-//
-//        final Business returnedBusiness = businessService.update(business, bindingResult);
-//
-//        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully updated!",
-//                HttpStatus.OK.value(),
-//                returnedBusiness);
-//    }
+    @PutMapping("/accounts")
+    public ResponseEntity<IRestResponse<Account>> updateAccount(final HttpServletRequest request,
+                                                                @Valid @RequestBody final Account account,
+                                                                final BindingResult bindingResult)
+                                                    throws InvalidRequestException {
+        LOG.debug("Updating account: " + account);
+
+        final Account returnedAccount = accountService.update(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully updated!",
+                HttpStatus.OK.value(),
+                returnedAccount);
+    }
 //
 //    @GetMapping("/businesses/{id}")
 //    public ResponseEntity<IRestResponse<Business>> retrieveBusiness(final HttpServletRequest request,

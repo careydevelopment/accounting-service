@@ -10,9 +10,12 @@ import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
+import us.careydevelopment.accounting.model.AccountType;
 import us.careydevelopment.accounting.model.PaymentAccount;
+import us.careydevelopment.accounting.model.User;
 import us.careydevelopment.accounting.repository.AccountRepository;
 import us.careydevelopment.accounting.util.SecurityUtil;
+import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.validation.ValidationUtil;
 
@@ -37,6 +40,9 @@ public class AccountValidationService {
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
+    private SessionUtil sessionUtil;
+
     public AccountValidationService() {
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -57,6 +63,17 @@ public class AccountValidationService {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 
         handleCustomValidationForNew(account, errors);
+
+        if (errors.size() > 0) {
+            throw new InvalidRequestException("Account is not valid", errors);
+        }
+    }
+
+    @VisibleForTesting
+    public void validateExisting(final Account account, final BindingResult bindingResult) throws InvalidRequestException {
+        final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
+
+        handleCustomValidationForExisting(account, errors);
 
         if (errors.size() > 0) {
             throw new InvalidRequestException("Account is not valid", errors);
@@ -93,28 +110,50 @@ public class AccountValidationService {
     public boolean accountNameExists(final String accountName) {
         boolean exists = false;
 
-        final Account account = accountRepository.findByName(accountName);
-        if (account != null) exists = true;
+        final User user = sessionUtil.getCurrentUser();
+
+        if (user != null) {
+            final Account account = accountRepository.findByNameAndOwnerUsername(accountName, user.getUsername());
+            if (account != null) exists = true;
+        } else {
+            //if the user is null we don't want to create or update the account
+            LOG.warn("Null user found when trying to retrieve account by name!");
+            exists = true;
+        }
+
+        return exists;
+    }
+
+    public boolean accountExists(final String id) {
+        boolean exists = false;
+
+        final Optional<Account> accountOpt = accountRepository.findById(id);
+        if (accountOpt.isPresent()) exists = true;
 
         return exists;
     }
 
     @VisibleForTesting
+    void handleCustomValidationForNewAndExisting(final Account account, final List<ValidationError> errors) {
+        if (StringUtils.isBlank(account.getName())) {
+            ValidationUtil.addError(errors, "Account name can't be empty",
+                    "name", null);
+        }
+
+        if (account.getAccountType() == null) {
+            ValidationUtil.addError(errors, "Account type required",
+                    "accountType", null);
+        }
+    }
+
+    @VisibleForTesting
     void handleCustomValidationForNew(final Account account, final List<ValidationError> errors) {
         if (account != null) {
-            if (StringUtils.isBlank(account.getName())) {
-                ValidationUtil.addError(errors, "Account name can't be empty",
-                        "name", null);
-            }
+            handleCustomValidationForNewAndExisting(account, errors);
 
             if (!StringUtils.isBlank(account.getId())) {
                 ValidationUtil.addError(errors, "Account id not allowed for new accounts",
                         "id", null);
-            }
-
-            if (account.getAccountType() == null) {
-                ValidationUtil.addError(errors, "Account type required",
-                        "accountType", null);
             }
 
             if (account.getOwner() != null) {
@@ -127,6 +166,58 @@ public class AccountValidationService {
                         "name", null);
             }
         }
+    }
+
+    @VisibleForTesting
+    void handleCustomValidationForExisting(final Account account, final List<ValidationError> errors) {
+        if (account != null) {
+            handleCustomValidationForNewAndExisting(account, errors);
+            handleValidationFromPersistedAccountForExisting(account, errors);
+        }
+    }
+
+    void handleValidationFromPersistedAccountForExisting(final Account account, final List<ValidationError> errors) {
+        if (StringUtils.isBlank(account.getId())) {
+            ValidationUtil.addError(errors, "Account id required for updates",
+                    "id", null);
+
+            return;
+        }
+
+        final Optional<Account> accountOpt = accountRepository.findById(account.getId());
+        final Account existingAccount = accountOpt.isPresent() ? accountOpt.get() : null;
+
+        if (existingAccount == null) {
+            ValidationUtil.addError(errors, "Account with ID " + account.getId() + " doesn't exist",
+                    "id", null);
+
+            return;
+        }
+
+        if (!existingAccount.getName().equals(account.getName())) {
+            if (accountNameExists(account.getName())) {
+                ValidationUtil.addError(errors, "Account with name " + account.getName() + " already exists",
+                        "name", null);
+            }
+        }
+
+        if (!AccountType.ASSET.equals(existingAccount.getAccountType()) &&
+                !AccountType.LIABILITY.equals(existingAccount.getAccountType()) &&
+                !AccountType.EQUITY.equals(existingAccount.getAccountType())) {
+
+            if (!existingAccount.getValue().equals(account.getValue())) {
+                ValidationUtil.addError(errors, "You may not change the value of expense or revenue accounts",
+                        "value", null);
+            }
+        }
+
+        if (!existingAccount.getAccountType().equals(account.getAccountType())) {
+            ValidationUtil.addError(errors, "You may not change the account type",
+                    "accountType", null);
+        }
+
+        account.setOwner(existingAccount.getOwner());
+        account.setParentAccount(existingAccount.getParentAccount());
     }
 
     public boolean validateOwnership(final String accountId) {

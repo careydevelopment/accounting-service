@@ -68,6 +68,13 @@ public class AccountService extends BaseService {
         return returnedAccount;
     }
 
+    public Account update(final Account account, final BindingResult bindingResult) throws InvalidRequestException {
+        accountValidationService.validateExisting(account, bindingResult);
+
+        final Account returnedAccount = accountRepository.save(account);
+        return returnedAccount;
+    }
+
     public void update(Account account) {
         accountValidationService.validate(account);
 

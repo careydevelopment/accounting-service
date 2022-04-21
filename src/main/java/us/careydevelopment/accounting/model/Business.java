@@ -17,7 +17,7 @@ import java.util.Objects;
  * in the business collection.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Business {
+public class Business extends OwnedItem {
 
     private String id;
 

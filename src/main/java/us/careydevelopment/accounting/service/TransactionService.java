@@ -41,10 +41,28 @@ public class TransactionService {
         }
     }
 
-    public void transact(Expense expense) {
+    public void transact(final Expense expense) {
         expense.getPayments().forEach(payment -> {
             transact(payment, expense.getPaymentAccount());
         });
+    }
+
+    public void transact(final SalesReceipt salesReceipt) {
+        salesReceipt.getSales().forEach(sale -> {
+            transact(sale, salesReceipt.getDepositTo());
+        });
+    }
+
+    public void transact(final SingleSale sale, PaymentAccount paymentAccount) {
+        Transaction transaction = new Transaction();
+
+        transaction.setDebitAccount(paymentAccount);
+        transaction.setDebitAmount(sale.getAmount());
+
+        transaction.setCreditAccount(sale.getAccount());
+        transaction.setCreditAmount(sale.getAmount());
+
+        transact(transaction);
     }
 
     public void transact(SinglePayment payment, PaymentAccount paymentAccount) {

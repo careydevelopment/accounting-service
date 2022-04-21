@@ -7,5 +7,5 @@ import us.careydevelopment.accounting.model.Account;
 @Repository
 public interface AccountRepository extends MongoRepository<Account, String> {
 
-    Account findByName(final String name);
+    Account findByNameAndOwnerUsername(String name, String ownerUsername);
 }
