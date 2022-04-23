@@ -25,16 +25,18 @@ public class Transaction {
     @NotNull
     @Valid
     private Account debitAccount;
-    private Long debitAmount;
+    private Long debitAmount = 0l;
 
     @NotNull
     @Valid
     private Account creditAccount;
-    private Long creditAmount;
+    private Long creditAmount = 0l;
+
+    private Long date;
 
     @AssertTrue(message = "Debit and credit amounts must be equal")
-    public boolean isDebitAccount() {
-        if (debitAmount != creditAmount) {
+    public boolean isDebitAmount() {
+        if (!debitAmount.equals(creditAmount)) {
             return false;
         }
 
@@ -79,6 +81,14 @@ public class Transaction {
 
     public void setCreditAmount(Long creditAmount) {
         this.creditAmount = creditAmount;
+    }
+
+    public Long getDate() {
+        return date;
+    }
+
+    public void setDate(Long date) {
+        this.date = date;
     }
 
     public String toString() {

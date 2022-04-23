@@ -41,7 +41,7 @@ public class SalesValidationService {
     @Autowired
     private PaymentAccountRepository paymentAccountRepository;
 
-    public void validateNew(final SalesReceipt salesReceipt, final BindingResult bindingResult) throws InvalidRequestException {
+    public void validateNew(final SalesReceipt salesReceipt, final BindingResult bindingResult) {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 
         handleCustomValidation(salesReceipt, errors);

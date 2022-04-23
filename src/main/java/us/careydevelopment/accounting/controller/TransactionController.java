@@ -9,8 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import us.careydevelopment.accounting.model.Expense;
-import us.careydevelopment.accounting.service.ExpenseService;
+import us.careydevelopment.accounting.model.Transaction;
+import us.careydevelopment.accounting.service.TransactionService;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.IRestResponse;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
@@ -20,15 +20,15 @@ import javax.validation.Valid;
 
 
 @RestController
-public class ExpenseController {
+public class TransactionController {
 	
-    private static final Logger LOG = LoggerFactory.getLogger(ExpenseController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionController.class);
 
     @Autowired
     private SessionUtil sessionUtil;
 
     @Autowired
-    private ExpenseService expenseService;
+    private TransactionService transactionService;
 
 //    @GetMapping("/expenses")
 //    public ResponseEntity<IRestResponse<List<Expense>>> retrieveExpenses(final HttpServletRequest request)
@@ -37,16 +37,16 @@ public class ExpenseController {
 //        return null;
 //    }
 
-    @PostMapping("/expenses")
-    public ResponseEntity<IRestResponse<Expense>> postExpense(final HttpServletRequest request,
-                                                                 @Valid @RequestBody final Expense expense,
-                                                                 final BindingResult bindingResult) {
-        LOG.debug("Posting expense: " + expense);
+    @PostMapping("/transactions")
+    public ResponseEntity<IRestResponse<Transaction>> postTransaction(final HttpServletRequest request,
+                                                                  @Valid @RequestBody final Transaction transaction,
+                                                                  final BindingResult bindingResult) {
+        LOG.debug("Posting transaction: " + transaction);
 
-        final Expense returnedExpense = expenseService.postExpense(expense, bindingResult);
+        final Transaction returnedTransaction = transactionService.transact(transaction, bindingResult);
 
         return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully posted expense!",
                 HttpStatus.CREATED.value(),
-                returnedExpense);
+                returnedTransaction);
     }
 }

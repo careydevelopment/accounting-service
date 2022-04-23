@@ -4,15 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.TransactionRepository;
+import us.careydevelopment.accounting.util.DateUtil;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.Set;
 
 @Component
 public class TransactionService {
@@ -27,18 +27,12 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private TransactionValidationService transactionValidationService;
+
     public TransactionService() {
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    private void validate(Transaction transaction) {
-        final Set<ConstraintViolation<Transaction>> violations = validator.validate(transaction);
-
-        if (violations.size() > 0) {
-            //TODO: Throwing a ServiceException for now because we should never get here
-            throw new ServiceException("Invalid transaction: " + transaction);
-        }
     }
 
     public void transact(final Expense expense) {
@@ -62,6 +56,8 @@ public class TransactionService {
         transaction.setCreditAccount(sale.getAccount());
         transaction.setCreditAmount(sale.getAmount());
 
+        transaction.setDate(sale.getDate());
+
         transact(transaction);
     }
 
@@ -74,28 +70,51 @@ public class TransactionService {
         transaction.setCreditAccount(paymentAccount);
         transaction.setCreditAmount(payment.getAmount());
 
+        transaction.setDate(payment.getDate());
+
         transact(transaction);
     }
 
-    public void transact(Transaction transaction) {
+    private void sanitizeData(final Transaction transaction) {
+        if (transaction.getDate() == null) {
+            transaction.setDate(DateUtil.currentTime());
+        }
+    }
+
+    public Transaction transact(final Transaction transaction) {
         try {
-            post(transaction);
+            sanitizeData(transaction);
+
+            final Transaction returnedTransaction = post(transaction);
             accountService.update(transaction);
+
+            return returnedTransaction;
         } catch (Exception e) {
             LOG.error("Failure when posting transaction!", e);
             throw new ServiceException(e.getMessage());
         }
     }
 
-    private void post(Transaction transaction) {
+    public Transaction transact(final Transaction transaction, final BindingResult bindingResult) {
+        transactionValidationService.validateNew(transaction, bindingResult);
+
+        final Transaction returnedTransaction = transact(transaction);
+
+        return returnedTransaction;
+    }
+
+    private Transaction post(Transaction transaction) {
         //going the extra mile with validation
-        validate(transaction);
+        transactionValidationService.validate(transaction);
 
         //persist the transaction BEFORE changing account values
-        transactionRepository.save(transaction);
+        final Transaction returnedTransaction = transactionRepository.save(transaction);
 
         credit(transaction.getCreditAccount(), transaction.getCreditAmount());
         debit(transaction.getDebitAccount(), transaction.getDebitAmount());
+
+        //returned transaction will include updated account values
+        return returnedTransaction;
     }
 
     private void credit(Account account, Long amount) {

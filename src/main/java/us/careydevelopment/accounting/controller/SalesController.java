@@ -9,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.model.SalesReceipt;
 import us.careydevelopment.accounting.service.SalesService;
 import us.careydevelopment.accounting.util.SessionUtil;
@@ -41,8 +40,7 @@ public class SalesController {
     @PostMapping("/salesReceipt")
     public ResponseEntity<IRestResponse<SalesReceipt>> postSales(final HttpServletRequest request,
                                                             @Valid @RequestBody final SalesReceipt salesReceipt,
-                                                            final BindingResult bindingResult)
-                                                                    throws InvalidRequestException {
+                                                            final BindingResult bindingResult) {
         LOG.debug("Posting sales: " + salesReceipt);
 
         final SalesReceipt returnedReceipt = salesService.postSalesReceipt(salesReceipt, bindingResult);

@@ -6,11 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import us.careydevelopment.accounting.exception.InvalidRequestException;
+import org.springframework.web.bind.annotation.*;
 import us.careydevelopment.accounting.model.Account;
 import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.service.AccountService;
@@ -32,8 +28,7 @@ public class AccountController {
     @PostMapping("/accounts")
     public ResponseEntity<IRestResponse<Account>> createAccount(final HttpServletRequest request,
                                                                  @Valid @RequestBody final Account account,
-                                                                 final BindingResult bindingResult)
-                                                                    throws InvalidRequestException {
+                                                                 final BindingResult bindingResult) {
         LOG.debug("Adding account: " + account);
 
         final Account returnedAccount = accountService.create(account, bindingResult);
@@ -46,8 +41,7 @@ public class AccountController {
     @PostMapping("/payment-accounts")
     public ResponseEntity<IRestResponse<Account>> createPaymentAccount(final HttpServletRequest request,
                                                                 @Valid @RequestBody final PaymentAccount account,
-                                                                final BindingResult bindingResult)
-                                                                throws InvalidRequestException {
+                                                                final BindingResult bindingResult) {
 
         LOG.debug("Adding payment account: " + account);
 
@@ -61,8 +55,7 @@ public class AccountController {
     @PutMapping("/accounts")
     public ResponseEntity<IRestResponse<Account>> updateAccount(final HttpServletRequest request,
                                                                 @Valid @RequestBody final Account account,
-                                                                final BindingResult bindingResult)
-                                                    throws InvalidRequestException {
+                                                                final BindingResult bindingResult) {
         LOG.debug("Updating account: " + account);
 
         final Account returnedAccount = accountService.update(account, bindingResult);
@@ -71,16 +64,16 @@ public class AccountController {
                 HttpStatus.OK.value(),
                 returnedAccount);
     }
-//
-//    @GetMapping("/businesses/{id}")
-//    public ResponseEntity<IRestResponse<Business>> retrieveBusiness(final HttpServletRequest request,
-//                                                                  final @PathVariable String id) throws NotFoundException {
-//        LOG.debug("Locating business by ID: " + id);
-//
-//        final Business business = businessService.retrieve(id);
-//
-//        return ResponseEntityUtil.createSuccessfulResponseEntity("Found business",
-//                HttpStatus.OK.value(),
-//                business);
-//    }
+
+    @GetMapping("/accounts/{id}")
+    public ResponseEntity<IRestResponse<Account>> retrieveAccount(final HttpServletRequest request,
+                                                                  final @PathVariable String id) {
+        LOG.debug("Locating account by ID: " + id);
+
+        final Account account = accountService.retrieve(id);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Found account",
+                HttpStatus.OK.value(),
+                account);
+    }
 }

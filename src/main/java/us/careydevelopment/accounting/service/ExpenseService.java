@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Expense;
 import us.careydevelopment.accounting.repository.ExpenseRepository;
@@ -28,7 +27,7 @@ public class ExpenseService extends BaseService {
     private ExpenseRepository expenseRepository;
 
     @Transactional
-    public Expense postExpense(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
+    public Expense postExpense(final Expense expense, final BindingResult bindingResult) {
         sanitizeData(expense);
 
         validationService.validateNew(expense, bindingResult);

@@ -4,7 +4,7 @@ import us.careydevelopment.util.api.model.ValidationError;
 
 import java.util.List;
 
-public class InvalidRequestException extends Exception {
+public class InvalidRequestException extends RuntimeException {
     private static final long serialVersionUID = 9155139576610874161L;
 
     private List<ValidationError> errors;

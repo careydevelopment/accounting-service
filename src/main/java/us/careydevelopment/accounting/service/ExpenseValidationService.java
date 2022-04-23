@@ -41,7 +41,7 @@ public class ExpenseValidationService {
     @Autowired
     private PaymentAccountRepository paymentAccountRepository;
 
-    public void validateNew(final Expense expense, final BindingResult bindingResult) throws InvalidRequestException {
+    public void validateNew(final Expense expense, final BindingResult bindingResult) {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 
         handleCustomValidation(expense, errors);
