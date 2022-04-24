@@ -5,21 +5,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.NotFoundException;
-import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
 import us.careydevelopment.accounting.model.PaymentAccount;
-import us.careydevelopment.accounting.model.Transaction;
 import us.careydevelopment.accounting.repository.AccountRepository;
 import us.careydevelopment.accounting.repository.PaymentAccountRepository;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class AccountService extends BaseService {
@@ -50,15 +47,7 @@ public class AccountService extends BaseService {
         return accountOptional.get();
     }
 
-    private void validate(Transaction transaction) {
-        final Set<ConstraintViolation<Transaction>> violations = validator.validate(transaction);
-
-        if (violations.size() > 0) {
-            //TODO: Throwing a ServiceException for now because we should never get here
-            throw new ServiceException("Invalid transaction: " + transaction);
-        }
-    }
-
+    @Transactional
     public Account create(final Account account, final BindingResult bindingResult) {
         accountValidationService.validateNew(account, bindingResult);
 
@@ -77,6 +66,7 @@ public class AccountService extends BaseService {
         return returnedAccount;
     }
 
+    @Transactional
     public Account update(final Account account, final BindingResult bindingResult) {
         accountValidationService.validateExisting(account, bindingResult);
 
@@ -89,15 +79,6 @@ public class AccountService extends BaseService {
 
         //update account values AFTER transaction
         accountRepository.save(account);
-    }
-
-    public Transaction update(Transaction transaction) {
-        validate(transaction);
-
-        update(transaction.getCreditAccount());
-        update(transaction.getDebitAccount());
-
-        return transaction;
     }
 
     @VisibleForTesting

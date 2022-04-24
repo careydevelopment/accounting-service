@@ -61,16 +61,6 @@ public class TransactionValidationService {
     }
 
     @VisibleForTesting
-    void validate(final Account account) {
-        final Set<ConstraintViolation<Account>> violations = validator.validate(account);
-
-        if (violations.size() > 0) {
-            //TODO: Throwing a ServiceException for now because we should never get here
-            throw new ServiceException("Invalid account: " + account);
-        }
-    }
-
-    @VisibleForTesting
     public void validateNew(final Transaction transaction, final BindingResult bindingResult) {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
 

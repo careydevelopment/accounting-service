@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
-import us.careydevelopment.accounting.model.AccountType;
 import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.model.User;
 import us.careydevelopment.accounting.repository.AccountRepository;
@@ -124,23 +123,6 @@ public class AccountValidationService {
         return exists;
     }
 
-    public boolean equityAccountExists() {
-        boolean exists = false;
-
-        final User user = sessionUtil.getCurrentUser();
-
-        if (user != null) {
-            final Account account = accountRepository.findByAccountTypeAndOwnerUsername(AccountType.EQUITY, user.getUsername());
-            if (account != null) exists = true;
-        } else {
-            //if the user is null we don't want to create or update the account
-            LOG.warn("Null user found when trying to retrieve equity account!");
-            exists = true;
-        }
-
-        return exists;
-    }
-
     public boolean accountExists(final String id) {
         boolean exists = false;
 
@@ -186,13 +168,6 @@ public class AccountValidationService {
             if (accountNameExists(account.getName())) {
                 ValidationUtil.addError(errors, "Account name already exists",
                         "name", null);
-            }
-
-            if (account.getAccountType().equals(AccountType.EQUITY)) {
-                if (equityAccountExists()) {
-                    ValidationUtil.addError(errors, "You may only have one equity account",
-                            "accountType", null);
-                }
             }
         }
     }

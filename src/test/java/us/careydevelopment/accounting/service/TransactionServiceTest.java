@@ -136,29 +136,29 @@ public class TransactionServiceTest {
         assertThrows(ServiceException.class, () -> transactionService.transact(transaction));
     }
 
-    @Test
-    public void testAccountServiceRuntimeException() {
-        final Transaction transaction = new Transaction();
-
-        final Account debitAccount = AccountHarness.getTelephoneExpenseAccount();
-        debitAccount.setValue(INITIAL_PHONE_EXPENSE_VALUE);
-
-        final Account creditAccount = PaymentAccountHarness.getValidBankPaymentAccount();
-        creditAccount.setValue(INITIAL_BANK_ACCOUNT_VALUE);
-
-        transaction.setDebitAccount(debitAccount);
-        transaction.setDebitAmount(PHONE_BILL_VALUE);
-
-        transaction.setCreditAccount(creditAccount);
-        transaction.setCreditAmount(PHONE_BILL_VALUE);
-
-        transaction.setId(PHONE_BILL_ID);
-
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
-        when(accountService.update(transaction)).thenThrow(new RuntimeException("yo!"));
-
-        assertThrows(ServiceException.class, () -> transactionService.transact(transaction));
-    }
+//    @Test
+//    public void testAccountServiceRuntimeException() {
+//        final Transaction transaction = new Transaction();
+//
+//        final Account debitAccount = AccountHarness.getTelephoneExpenseAccount();
+//        debitAccount.setValue(INITIAL_PHONE_EXPENSE_VALUE);
+//
+//        final Account creditAccount = PaymentAccountHarness.getValidBankPaymentAccount();
+//        creditAccount.setValue(INITIAL_BANK_ACCOUNT_VALUE);
+//
+//        transaction.setDebitAccount(debitAccount);
+//        transaction.setDebitAmount(PHONE_BILL_VALUE);
+//
+//        transaction.setCreditAccount(creditAccount);
+//        transaction.setCreditAmount(PHONE_BILL_VALUE);
+//
+//        transaction.setId(PHONE_BILL_ID);
+//
+//        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+//        when(accountService.update(transaction)).thenThrow(new RuntimeException("yo!"));
+//
+//        assertThrows(ServiceException.class, () -> transactionService.transact(transaction));
+//    }
 
 //    @Test
 //    public void testDuplicateBusinessName() {

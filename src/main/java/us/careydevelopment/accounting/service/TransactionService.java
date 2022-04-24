@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
@@ -35,18 +36,21 @@ public class TransactionService {
         validator = factory.getValidator();
     }
 
+    @Transactional
     public void transact(final Expense expense) {
         expense.getPayments().forEach(payment -> {
             transact(payment, expense.getPaymentAccount());
         });
     }
 
+    @Transactional
     public void transact(final SalesReceipt salesReceipt) {
         salesReceipt.getSales().forEach(sale -> {
             transact(sale, salesReceipt.getDepositTo());
         });
     }
 
+    @Transactional
     public void transact(final SingleSale sale, PaymentAccount paymentAccount) {
         Transaction transaction = new Transaction();
 
@@ -61,6 +65,7 @@ public class TransactionService {
         transact(transaction);
     }
 
+    @Transactional
     public void transact(SinglePayment payment, PaymentAccount paymentAccount) {
         Transaction transaction = new Transaction();
 
@@ -86,7 +91,8 @@ public class TransactionService {
             sanitizeData(transaction);
 
             final Transaction returnedTransaction = post(transaction);
-            accountService.update(transaction);
+            accountService.update(transaction.getCreditAccount());
+            accountService.update(transaction.getDebitAccount());
 
             return returnedTransaction;
         } catch (Exception e) {
@@ -95,6 +101,7 @@ public class TransactionService {
         }
     }
 
+    @Transactional
     public Transaction transact(final Transaction transaction, final BindingResult bindingResult) {
         transactionValidationService.validateNew(transaction, bindingResult);
 
