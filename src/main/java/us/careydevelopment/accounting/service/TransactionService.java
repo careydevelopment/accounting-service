@@ -51,10 +51,10 @@ public class TransactionService {
     }
 
     @Transactional
-    public void transact(final SingleSale sale, PaymentAccount paymentAccount) {
+    public void transact(final SingleSale sale, Account account) {
         Transaction transaction = new Transaction();
 
-        transaction.setDebitAccount(paymentAccount);
+        transaction.setDebitAccount(account);
         transaction.setDebitAmount(sale.getAmount());
 
         transaction.setCreditAccount(sale.getAccount());

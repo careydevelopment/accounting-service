@@ -7,8 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import us.careydevelopment.accounting.model.Account;
-import us.careydevelopment.accounting.model.PaymentAccount;
+import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.service.AccountService;
 import us.careydevelopment.util.api.model.IRestResponse;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
@@ -38,7 +37,67 @@ public class AccountController {
                 returnedAccount);
     }
 
-    @PostMapping("/payment-accounts")
+    @PostMapping("/accounts/expenses")
+    public ResponseEntity<IRestResponse<ExpenseAccount>> createExpenseAccount(@Valid @RequestBody final ExpenseAccount account,
+                                                                        final BindingResult bindingResult) {
+        LOG.debug("Adding expense account: " + account);
+
+        final ExpenseAccount returnedAccount = (ExpenseAccount)accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/accounts/liabilities")
+    public ResponseEntity<IRestResponse<LiabilityAccount>> createLiabilityAccount(@Valid @RequestBody final LiabilityAccount account,
+                                                                              final BindingResult bindingResult) {
+        LOG.debug("Adding liability account: " + account);
+
+        final LiabilityAccount returnedAccount = (LiabilityAccount)accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/accounts/revenue")
+    public ResponseEntity<IRestResponse<RevenueAccount>> createRevenueAccount(@Valid @RequestBody final RevenueAccount account,
+                                                                              final BindingResult bindingResult) {
+        LOG.debug("Adding revenue account: " + account);
+
+        final RevenueAccount returnedAccount = (RevenueAccount)accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/accounts/assets")
+    public ResponseEntity<IRestResponse<AssetAccount>> createEquityAccount(@Valid @RequestBody final AssetAccount account,
+                                                                              final BindingResult bindingResult) {
+        LOG.debug("Adding asset account: " + account);
+
+        final AssetAccount returnedAccount = (AssetAccount)accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/accounts/equity")
+    public ResponseEntity<IRestResponse<EquityAccount>> createEquityAccount(@Valid @RequestBody final EquityAccount account,
+                                                                            final BindingResult bindingResult) {
+        LOG.debug("Adding equity account: " + account);
+
+        final EquityAccount returnedAccount = (EquityAccount)accountService.create(account, bindingResult);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created!",
+                HttpStatus.CREATED.value(),
+                returnedAccount);
+    }
+
+    @PostMapping("/accounts/assets/paymentAccounts")
     public ResponseEntity<IRestResponse<Account>> createPaymentAccount(final HttpServletRequest request,
                                                                 @Valid @RequestBody final PaymentAccount account,
                                                                 final BindingResult bindingResult) {

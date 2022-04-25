@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import us.careydevelopment.accounting.exception.InvalidRequestException;
 import us.careydevelopment.accounting.exception.ServiceException;
-import us.careydevelopment.accounting.model.Account;
-import us.careydevelopment.accounting.model.PaymentAccount;
-import us.careydevelopment.accounting.model.User;
+import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.AccountRepository;
 import us.careydevelopment.accounting.util.SecurityUtil;
 import us.careydevelopment.accounting.util.SessionUtil;
@@ -94,9 +92,11 @@ public class AccountValidationService {
     @VisibleForTesting
     void handleCustomValidationForNewPaymentAccount(final PaymentAccount account, final List<ValidationError> errors) {
         if (account != null) {
-            if (account.getPaymentAccountType() == null) {
-                ValidationUtil.addError(errors, "Payment account type required",
-                        "paymentAccountType", null);
+            if (!AssetAccountType.BANK.equals(account.getAssetAccountType())
+                && !!AssetAccountType.CURRENT_ASSETS.equals(account.getAssetAccountType())) {
+
+                ValidationUtil.addError(errors, "Payment account type must be BANK or CURRENT_ASSETS",
+                        "assetAccountType", null);
             }
 
             if (account.getPaymentAccountDetailType() == null) {
@@ -147,28 +147,70 @@ public class AccountValidationService {
 
     @VisibleForTesting
     void handleCustomValidationForNew(final Account account, final List<ValidationError> errors) {
-        if (account != null) {
-            handleCustomValidationForNewAndExisting(account, errors);
+        validateSpecificAccountType(account, errors);
+        validateFieldsForNew(account, errors);
+    }
 
-            if (account.getValue() != null && account.getValue() != 0l) {
-                ValidationUtil.addError(errors, "Account value must be 0 at creation time",
-                        "value", null);
+    @VisibleForTesting
+    void validateSpecificAccountType(final Account account, final List<ValidationError> errors) {
+        if (account instanceof ExpenseAccount) {
+            if (!AccountType.EXPENSE.equals(account.getAccountType())) {
+                ValidationUtil.addError(errors, "Account must be of type EXPENSE",
+                        "accountType", null);
             }
+        }
 
-            if (!StringUtils.isBlank(account.getId())) {
-                ValidationUtil.addError(errors, "Account id not allowed for new accounts",
-                        "id", null);
+        if (account instanceof EquityAccount) {
+            if (!AccountType.EQUITY.equals(account.getAccountType())) {
+                ValidationUtil.addError(errors, "Account must be of type EQUITY",
+                        "accountType", null);
             }
+        }
 
-            if (account.getOwner() != null) {
-                ValidationUtil.addError(errors, "Owner will be assigned",
-                        "owner", null);
+        if (account instanceof RevenueAccount) {
+            if (!AccountType.REVENUE.equals(account.getAccountType())) {
+                ValidationUtil.addError(errors, "Account must be of type REVENUE",
+                        "accountType", null);
             }
+        }
 
-            if (accountNameExists(account.getName())) {
-                ValidationUtil.addError(errors, "Account name already exists",
-                        "name", null);
+        if (account instanceof AssetAccount) {
+            if (!AccountType.ASSET.equals(account.getAccountType())) {
+                ValidationUtil.addError(errors, "Account must be of type ASSET",
+                        "accountType", null);
             }
+        }
+
+        if (account instanceof LiabilityAccount) {
+            if (!AccountType.LIABILITY.equals(account.getAccountType())) {
+                ValidationUtil.addError(errors, "Account must be of type LIABILITY",
+                        "accountType", null);
+            }
+        }
+    }
+
+    @VisibleForTesting
+    void validateFieldsForNew(final Account account, final List<ValidationError> errors) {
+        handleCustomValidationForNewAndExisting(account, errors);
+
+        if (account.getValue() != null && account.getValue() != 0l) {
+            ValidationUtil.addError(errors, "Account value must be 0 at creation time",
+                    "value", null);
+        }
+
+        if (!StringUtils.isBlank(account.getId())) {
+            ValidationUtil.addError(errors, "Account id not allowed for new accounts",
+                    "id", null);
+        }
+
+        if (account.getOwner() != null) {
+            ValidationUtil.addError(errors, "Owner will be assigned",
+                    "owner", null);
+        }
+
+        if (accountNameExists(account.getName())) {
+            ValidationUtil.addError(errors, "Account name already exists",
+                    "name", null);
         }
     }
 

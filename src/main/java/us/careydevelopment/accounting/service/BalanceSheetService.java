@@ -27,7 +27,7 @@ public class BalanceSheetService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private NetIncomeService netIncomeService;
+    private IncomeStatementService incomeStatementService;
 
     public BalanceSheet report() {
         final User user = sessionUtil.getCurrentUser();
@@ -42,6 +42,7 @@ public class BalanceSheetService {
 
     public BalanceSheet reportByUser(final User user) {
         final BalanceSheet balanceSheet = new BalanceSheet();
+        balanceSheet.setUser(user);
 
         final List<Account> allAccounts = accountRepository.findByOwnerUsername(user.getUsername());
 
@@ -92,7 +93,7 @@ public class BalanceSheetService {
     }
 
     private void calculateEquityFromDerivedAccounts(final BalanceSheet balanceSheet, final List<Account> allAccounts) {
-        final Account netIncomeAccount = netIncomeService.getNetIncomeAsAccount(allAccounts);
+        final Account netIncomeAccount = incomeStatementService.getNetIncomeAsAccount(allAccounts);
         balanceSheet.getEquity().add(netIncomeAccount);
         LOG.debug("Net income derived account is " + netIncomeAccount);
 

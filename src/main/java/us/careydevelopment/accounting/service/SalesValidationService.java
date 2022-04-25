@@ -12,7 +12,6 @@ import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.AccountRepository;
-import us.careydevelopment.accounting.repository.PaymentAccountRepository;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.validation.ValidationUtil;
@@ -37,9 +36,6 @@ public class SalesValidationService {
 
     @Autowired
     private AccountValidationService accountValidationService;
-
-    @Autowired
-    private PaymentAccountRepository paymentAccountRepository;
 
     public void validateNew(final SalesReceipt salesReceipt, final BindingResult bindingResult) {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
@@ -95,23 +91,30 @@ public class SalesValidationService {
 
     @VisibleForTesting
     void validatePaymentAccount(final SalesReceipt salesReceipt, final List<ValidationError> errors) {
-        final PaymentAccount paymentAccount = salesReceipt.getDepositTo();
+        final Account account = salesReceipt.getDepositTo();
 
-        if (!StringUtils.isBlank(paymentAccount.getId())) {
-            final Optional<PaymentAccount> retrievedAccount = paymentAccountRepository.findById(paymentAccount.getId());
+        if (!StringUtils.isBlank(account.getId())) {
+            final Optional<Account> retrievedAccountOpt = accountRepository.findById(account.getId());
 
-            if (retrievedAccount.isPresent()) {
+            if (retrievedAccountOpt.isPresent()) {
+                final Account retrievedAccount = retrievedAccountOpt.get();
+
                 final User user = sessionUtil.getCurrentUser();
-                final boolean authorized = user.equals(retrievedAccount.get().getOwner());
+                final boolean authorized = user.equals(retrievedAccount.getOwner());
 
                 if (authorized) {
-                    salesReceipt.setDepositTo(retrievedAccount.get());
+                    if (!AccountType.ASSET.equals(retrievedAccount.getAccountType())) {
+                        ValidationUtil.addError(errors, "Deposit to account must be an asset",
+                                "depositTo", null);
+                    } else {
+                        salesReceipt.setDepositTo(retrievedAccount);
+                    }
                 } else {
-                    ValidationUtil.addError(errors, "You aren't the owner of the deposit account: " + paymentAccount.getName(),
+                    ValidationUtil.addError(errors, "You aren't the owner of the account: " + account.getName(),
                             "depositTo.owner", null);
                 }
             } else {
-                ValidationUtil.addError(errors, "Deposit account with ID: " + paymentAccount.getId() + " doesn't exist!",
+                ValidationUtil.addError(errors, "Deposit account with ID: " + account.getId() + " doesn't exist!",
                         "depositTo.id", null);
             }
         } else {

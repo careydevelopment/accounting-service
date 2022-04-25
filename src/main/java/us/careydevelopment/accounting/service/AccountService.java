@@ -11,7 +11,6 @@ import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.model.Account;
 import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.repository.AccountRepository;
-import us.careydevelopment.accounting.repository.PaymentAccountRepository;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -27,9 +26,6 @@ public class AccountService extends BaseService {
 
     @Autowired
     private AccountRepository accountRepository;
-
-    @Autowired
-    private PaymentAccountRepository paymentAccountRepository;
 
     @Autowired
     private AccountValidationService accountValidationService;
@@ -62,7 +58,7 @@ public class AccountService extends BaseService {
 
         sanitizeData(account);
 
-        final PaymentAccount returnedAccount = paymentAccountRepository.save(account);
+        final PaymentAccount returnedAccount = accountRepository.save(account);
         return returnedAccount;
     }
 

@@ -12,7 +12,6 @@ import us.careydevelopment.accounting.exception.NotFoundException;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.*;
 import us.careydevelopment.accounting.repository.AccountRepository;
-import us.careydevelopment.accounting.repository.PaymentAccountRepository;
 import us.careydevelopment.accounting.util.SessionUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.validation.ValidationUtil;
@@ -37,9 +36,6 @@ public class ExpenseValidationService {
 
     @Autowired
     private AccountValidationService accountValidationService;
-
-    @Autowired
-    private PaymentAccountRepository paymentAccountRepository;
 
     public void validateNew(final Expense expense, final BindingResult bindingResult) {
         final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
@@ -98,14 +94,14 @@ public class ExpenseValidationService {
         final PaymentAccount paymentAccount = expense.getPaymentAccount();
 
         if (!StringUtils.isBlank(paymentAccount.getId())) {
-            final Optional<PaymentAccount> retrievedAccount = paymentAccountRepository.findById(paymentAccount.getId());
+            final Optional<Account> retrievedAccount = accountRepository.findById(paymentAccount.getId());
 
             if (retrievedAccount.isPresent()) {
                 final User user = sessionUtil.getCurrentUser();
                 final boolean authorized = user.equals(retrievedAccount.get().getOwner());
 
                 if (authorized) {
-                    expense.setPaymentAccount(retrievedAccount.get());
+                    expense.setPaymentAccount((PaymentAccount) retrievedAccount.get());
                 } else {
                     ValidationUtil.addError(errors, "You aren't the owner of the payment account: " + paymentAccount.getName(),
                             "paymentAccount.owner", null);

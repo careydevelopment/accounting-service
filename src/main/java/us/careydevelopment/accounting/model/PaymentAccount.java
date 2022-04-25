@@ -12,25 +12,15 @@ import java.util.Objects;
  * as payment detail type (checking account, trust, etc.).
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PaymentAccount extends Account {
+public class PaymentAccount extends AssetAccount {
 
     public PaymentAccount() {
         setAccountType(AccountType.ASSET);
+        setAssetAccountType(AssetAccountType.BANK);
     }
-
-    @NotNull
-    private PaymentAccountType paymentAccountType = PaymentAccountType.BANK;
 
     @NotNull
     private PaymentAccountDetailType paymentAccountDetailType = PaymentAccountDetailType.CHECKING;
-
-    public PaymentAccountType getPaymentAccountType() {
-        return paymentAccountType;
-    }
-
-    public void setPaymentAccountType(PaymentAccountType paymentAccountType) {
-        this.paymentAccountType = paymentAccountType;
-    }
 
     public PaymentAccountDetailType getPaymentAccountDetailType() {
         return paymentAccountDetailType;

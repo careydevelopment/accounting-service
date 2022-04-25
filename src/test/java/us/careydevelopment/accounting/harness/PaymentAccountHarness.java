@@ -1,8 +1,8 @@
 package us.careydevelopment.accounting.harness;
 
+import us.careydevelopment.accounting.model.AssetAccountType;
 import us.careydevelopment.accounting.model.PaymentAccount;
 import us.careydevelopment.accounting.model.PaymentAccountDetailType;
-import us.careydevelopment.accounting.model.PaymentAccountType;
 
 public class PaymentAccountHarness {
 
@@ -12,7 +12,7 @@ public class PaymentAccountHarness {
 
     public static PaymentAccount getValidBankPaymentAccount() {
         PaymentAccount paymentAccount = new PaymentAccount();
-        paymentAccount.setPaymentAccountType(PaymentAccountType.BANK);
+        paymentAccount.setAssetAccountType(AssetAccountType.BANK);
         paymentAccount.setName(NAME);
         paymentAccount.setId(ID);
         paymentAccount.setValue(BANK_VALUE);

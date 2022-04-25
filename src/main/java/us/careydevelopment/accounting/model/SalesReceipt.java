@@ -34,7 +34,7 @@ public class SalesReceipt extends OwnedItem {
     private String referenceNumber;
 
     @NotNull
-    private PaymentAccount depositTo;
+    private Account depositTo;
 
     @NotEmpty(message = "Sales list cannot be empty.")
     private List<SingleSale> sales = new ArrayList<>();
@@ -95,11 +95,11 @@ public class SalesReceipt extends OwnedItem {
         this.referenceNumber = referenceNumber;
     }
 
-    public PaymentAccount getDepositTo() {
+    public Account getDepositTo() {
         return depositTo;
     }
 
-    public void setDepositTo(PaymentAccount depositTo) {
+    public void setDepositTo(Account depositTo) {
         this.depositTo = depositTo;
     }
 
