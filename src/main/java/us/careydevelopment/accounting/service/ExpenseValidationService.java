@@ -91,7 +91,7 @@ public class ExpenseValidationService {
 
     @VisibleForTesting
     void validatePaymentAccount(final Expense expense, final List<ValidationError> errors) {
-        final PaymentAccount paymentAccount = expense.getPaymentAccount();
+        final AssetAccount paymentAccount = expense.getPaymentAccount();
 
         if (!StringUtils.isBlank(paymentAccount.getId())) {
             final Optional<Account> retrievedAccount = accountRepository.findById(paymentAccount.getId());
@@ -101,7 +101,7 @@ public class ExpenseValidationService {
                 final boolean authorized = user.equals(retrievedAccount.get().getOwner());
 
                 if (authorized) {
-                    expense.setPaymentAccount((PaymentAccount) retrievedAccount.get());
+                    expense.setPaymentAccount((AssetAccount) retrievedAccount.get());
                 } else {
                     ValidationUtil.addError(errors, "You aren't the owner of the payment account: " + paymentAccount.getName(),
                             "paymentAccount.owner", null);

@@ -16,6 +16,10 @@ public class CashFlowStatement {
     private List<InvestingActivity> investingActivities = new ArrayList<>();
     private List<FinancingActivity> financingActivities = new ArrayList<>();
 
+    private Long cashFromOperatingActivities = 0l;
+    private Long cashFromInvestingActivities = 0l;
+    private Long cashFromFinancingActivities = 0l;
+
     private Long cashAtEnd = 0l;
     private Long changeInCash = 0l;
 
@@ -65,6 +69,30 @@ public class CashFlowStatement {
 
     public void setFinancingActivities(List<FinancingActivity> financingActivities) {
         this.financingActivities = financingActivities;
+    }
+
+    public Long getCashFromOperatingActivities() {
+        return cashFromOperatingActivities;
+    }
+
+    public void setCashFromOperatingActivities(Long cashFromOperatingActivities) {
+        this.cashFromOperatingActivities = cashFromOperatingActivities;
+    }
+
+    public Long getCashFromInvestingActivities() {
+        return cashFromInvestingActivities;
+    }
+
+    public void setCashFromInvestingActivities(Long cashFromInvestingActivities) {
+        this.cashFromInvestingActivities = cashFromInvestingActivities;
+    }
+
+    public Long getCashFromFinancingActivities() {
+        return cashFromFinancingActivities;
+    }
+
+    public void setCashFromFinancingActivities(Long cashFromFinancingActivities) {
+        this.cashFromFinancingActivities = cashFromFinancingActivities;
     }
 
     public Long getCashAtEnd() {

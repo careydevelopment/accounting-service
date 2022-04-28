@@ -33,7 +33,7 @@ public class Expense extends OwnedItem {
 
     @Valid
     @NotNull
-    private PaymentAccount paymentAccount;
+    private AssetAccount paymentAccount;
 
     //Date is always a long in epoch millseconds UTC
     private Long date;
@@ -69,11 +69,11 @@ public class Expense extends OwnedItem {
         this.payee = payee;
     }
 
-    public PaymentAccount getPaymentAccount() {
+    public AssetAccount getPaymentAccount() {
         return paymentAccount;
     }
 
-    public void setPaymentAccount(PaymentAccount paymentAccount) {
+    public void setPaymentAccount(AssetAccount paymentAccount) {
         this.paymentAccount = paymentAccount;
     }
 

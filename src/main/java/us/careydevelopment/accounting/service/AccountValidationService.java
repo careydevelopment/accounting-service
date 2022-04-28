@@ -77,35 +77,6 @@ public class AccountValidationService {
         }
     }
 
-    @VisibleForTesting
-    public void validateNewPaymentAccount(final PaymentAccount account, final BindingResult bindingResult) {
-        final List<ValidationError> errors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
-
-        handleCustomValidationForNew(account, errors);
-        handleCustomValidationForNewPaymentAccount(account, errors);
-
-        if (errors.size() > 0) {
-            throw new InvalidRequestException("Account is not valid", errors);
-        }
-    }
-
-    @VisibleForTesting
-    void handleCustomValidationForNewPaymentAccount(final PaymentAccount account, final List<ValidationError> errors) {
-        if (account != null) {
-            if (!AssetAccountType.BANK.equals(account.getAssetAccountType())
-                && !!AssetAccountType.CURRENT_ASSETS.equals(account.getAssetAccountType())) {
-
-                ValidationUtil.addError(errors, "Payment account type must be BANK or CURRENT_ASSETS",
-                        "assetAccountType", null);
-            }
-
-            if (account.getPaymentAccountDetailType() == null) {
-                ValidationUtil.addError(errors, "Payment account detail type required",
-                        "paymentAccountDetailType", null);
-            }
-        }
-    }
-
     public boolean accountNameExists(final String accountName) {
         boolean exists = false;
 

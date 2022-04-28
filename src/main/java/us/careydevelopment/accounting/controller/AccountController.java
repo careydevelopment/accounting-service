@@ -97,20 +97,6 @@ public class AccountController {
                 returnedAccount);
     }
 
-    @PostMapping("/accounts/assets/paymentAccounts")
-    public ResponseEntity<IRestResponse<Account>> createPaymentAccount(final HttpServletRequest request,
-                                                                @Valid @RequestBody final PaymentAccount account,
-                                                                final BindingResult bindingResult) {
-
-        LOG.debug("Adding payment account: " + account);
-
-        final PaymentAccount returnedAccount = accountService.create(account, bindingResult);
-
-        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully created payment account!",
-                HttpStatus.CREATED.value(),
-                returnedAccount);
-    }
-
     @PutMapping("/accounts")
     public ResponseEntity<IRestResponse<Account>> updateAccount(final HttpServletRequest request,
                                                                 @Valid @RequestBody final Account account,

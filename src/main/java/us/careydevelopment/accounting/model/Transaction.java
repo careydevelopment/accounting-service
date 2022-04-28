@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 @Document(collection = "#{@environment.getProperty('mongo.transaction.collection')}")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Transaction {
+public class Transaction extends OwnedItem {
 
     @Id
     private String id;

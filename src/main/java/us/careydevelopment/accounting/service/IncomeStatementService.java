@@ -26,43 +26,11 @@ public class IncomeStatementService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account getNetIncomeAsAccount(final List<Account> accounts) {
-        final Account account = new Account();
+    @Autowired
+    private SettingsService settingsService;
 
-        account.setName("Net Income");
-        account.setAccountType(AccountType.EQUITY);
-
-        final Long netIncome = calculateNetIncome(accounts);
-        account.setValue(netIncome);
-
-        return account;
-    }
-
-    private Long calculateNetIncome(final List<Account> accounts) {
-        LOG.debug("Calculating net income from provided accounts");
-
-        final Long revenue = accounts
-                .stream()
-                .filter(account -> account.getAccountType().equals(AccountType.REVENUE))
-                .mapToLong(account -> account.getValue())
-                .sum();
-
-        LOG.debug("Revenue is " + revenue);
-
-        final Long expenses = accounts
-                .stream()
-                .filter(account -> account.getAccountType().equals(AccountType.EXPENSE))
-                .mapToLong(account -> account.getValue())
-                .sum();
-
-        LOG.debug("Expenses is " + expenses);
-
-        final Long netIncome = revenue - expenses;
-
-        LOG.debug("Net income is " + netIncome);
-
-        return netIncome;
-    }
+    @Autowired
+    private TransactionService transactionService;
 
     public IncomeStatement report() {
         final User user = sessionUtil.getCurrentUser();

@@ -16,13 +16,13 @@ public class TransactionHarness {
         final Account debitAccount = AccountHarness.getTelephoneExpenseAccount();
         debitAccount.setValue(INITIAL_PHONE_EXPENSE_VALUE);
 
-        final Account creditAccount = PaymentAccountHarness.getValidBankPaymentAccount();
-        creditAccount.setValue(INITIAL_BANK_ACCOUNT_VALUE);
+//        final Account creditAccount = PaymentAccountHarness.getValidBankPaymentAccount();
+//        creditAccount.setValue(INITIAL_BANK_ACCOUNT_VALUE);
 
         transaction.setDebitAccount(debitAccount);
         transaction.setDebitAmount(PHONE_BILL_VALUE);
 
-        transaction.setCreditAccount(creditAccount);
+//        transaction.setCreditAccount(creditAccount);
         transaction.setCreditAmount(PHONE_BILL_VALUE);
 
         transaction.setId(PHONE_BILL_ID);

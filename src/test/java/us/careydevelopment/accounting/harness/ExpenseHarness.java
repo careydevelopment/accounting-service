@@ -15,7 +15,7 @@ public class ExpenseHarness {
         expense.setId(TELEPHONE_EXPENSE_ID);
         expense.setDate(new Date().getTime());
         expense.setPayee(BusinessLightweightHarness.getValidBusinessLightweightNoPerson());
-        expense.setPaymentAccount(PaymentAccountHarness.getValidBankPaymentAccount());
+        //expense.setPaymentAccount(PaymentAccountHarness.getValidBankPaymentAccount());
         expense.setPaymentMethod(PaymentMethod.CHECK);
 
         final Account account = AccountHarness.getTelephoneExpenseAccount();

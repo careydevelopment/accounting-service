@@ -8,6 +8,7 @@ import java.util.List;
 public class BalanceSheet {
 
     private User user;
+    private Long asOf;
     private List<Account> assets = new ArrayList<>();
     private List<Account> liabilities = new ArrayList<>();
     private List<Account> equity = new ArrayList<>();
@@ -21,6 +22,14 @@ public class BalanceSheet {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Long getAsOf() {
+        return asOf;
+    }
+
+    public void setAsOf(Long asOf) {
+        this.asOf = asOf;
     }
 
     public List<Account> getAssets() {

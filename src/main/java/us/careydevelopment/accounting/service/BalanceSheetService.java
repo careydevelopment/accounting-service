@@ -3,6 +3,7 @@ package us.careydevelopment.accounting.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import us.careydevelopment.accounting.exception.ServiceException;
 import us.careydevelopment.accounting.model.Account;
@@ -29,26 +30,34 @@ public class BalanceSheetService {
     @Autowired
     private IncomeStatementService incomeStatementService;
 
-    public BalanceSheet report() {
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private TransactionService transactionService;
+
+    public BalanceSheet report(final Long asOf) {
         final User user = sessionUtil.getCurrentUser();
         LOG.debug("Getting balance sheet for " + user);
 
         if (user != null) {
-            return reportByUser(user);
+            return reportByUser(user, asOf);
         } else {
             throw new ServiceException("Could not identify current user!");
         }
     }
 
-    public BalanceSheet reportByUser(final User user) {
+    public BalanceSheet reportByUser(final User user, final Long asOf) {
         final BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setUser(user);
+        balanceSheet.setAsOf(asOf);
 
         final List<Account> allAccounts = accountRepository.findByOwnerUsername(user.getUsername());
+        final List<Account> accountsAtTime = transactionService.getAccountsAsOf(asOf, allAccounts);
 
-        calculateAssets(balanceSheet, allAccounts);
-        calculateLiabilities(balanceSheet, allAccounts);
-        calculateEquity(balanceSheet, allAccounts);
+        calculateAssets(balanceSheet, accountsAtTime);
+        calculateLiabilities(balanceSheet, accountsAtTime);
+        calculateEquity(balanceSheet, accountsAtTime);
 
         return balanceSheet;
     }
@@ -87,20 +96,8 @@ public class BalanceSheetService {
         balanceSheet.setLiabilitiesValue(liabilitiesValue);
     }
 
-    private void calculateEquity(final BalanceSheet balanceSheet, final List<Account> allAccounts) {
-        calculateEquityFromPersistedAccounts(balanceSheet, allAccounts);
-        calculateEquityFromDerivedAccounts(balanceSheet, allAccounts);
-    }
-
-    private void calculateEquityFromDerivedAccounts(final BalanceSheet balanceSheet, final List<Account> allAccounts) {
-        final Account netIncomeAccount = incomeStatementService.getNetIncomeAsAccount(allAccounts);
-        balanceSheet.getEquity().add(netIncomeAccount);
-        LOG.debug("Net income derived account is " + netIncomeAccount);
-
-        final Long updatedEquityValue = balanceSheet.getEquityValue() + netIncomeAccount.getValue();
-        LOG.debug("Updated equity value is " + updatedEquityValue);
-
-        balanceSheet.setEquityValue(updatedEquityValue);
+    private void calculateEquity(final BalanceSheet balanceSheet, final List<Account> accountsAtTime) {
+        calculateEquityFromPersistedAccounts(balanceSheet, accountsAtTime);
     }
 
     private void calculateEquityFromPersistedAccounts(final BalanceSheet balanceSheet, final List<Account> allAccounts) {
